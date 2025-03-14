@@ -1,0 +1,20 @@
+.leads {
+    padding: 20px;
+  }
+  
+  .leads table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .leads th, .leads td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .leads th {
+    background-color: #2c3e50;
+    color: white;
+  }
+  

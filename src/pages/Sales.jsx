@@ -38,16 +38,16 @@ const Sales = () => {
             <th>ID</th>
             <th>Customer</th>
             <th>Amount</th>
-            <th>Status</th>
+            {/* <th>Status</th> */}
           </tr>
         </thead>
         <tbody>
           {sales.map((sale) => (
             <tr key={sale._id}>
               <td>{sale._id}</td>
-              <td>{sale.customer}</td>
-              <td>{sale.amount}</td>
-              <td>{sale.status}</td>
+              <td>{sale.name}</td>
+              <td>{sale.amount || "Not Entered"}</td>
+              {/* <td>{sale.status}</td> */}
             </tr>
           ))}
         </tbody>

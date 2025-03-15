@@ -1,35 +1,27 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../styles/Login.css";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "../styles/Auth.css";
 import toast from "react-hot-toast";
 
-const Login = ({ onAuth }) => {
+const Login = () => {
   const navigate = useNavigate();
+  const { handleAuth } = useAuth();
   const [credentials, setCredentials] = useState({
     email: "",
-    password: ""
+    password: "",
+    role: "employee" // Default role is employee
   });
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.authToken);
-        localStorage.setItem("userRole", data.role);
-        toast.success("Login successful!");
-        navigate(data.role === "admin" ? "/admin" : "/");
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.msg || "Login failed");
-      }
-    } catch (error) {
-      toast.error("Login failed");
+    const success = await handleAuth(credentials.email, credentials.password, "", credentials.role);
+    if (success) {
+      toast.success("Login successful!");
+      navigate("/");
+    } else {
+      setError("Invalid credentials");
     }
   };
 
@@ -41,10 +33,12 @@ const Login = ({ onAuth }) => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>Welcome Back</h1>
-        <p className="subtitle">Please enter your details to sign in</p>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1>Login</h1>
+        <p className="subtitle">Please enter your credentials</p>
+        
+        {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -55,7 +49,7 @@ const Login = ({ onAuth }) => {
               name="email"
               value={credentials.email}
               onChange={handleChange}
-              placeholder="Enter your email" 
+              placeholder="Enter your email"
               required 
             />
           </div>
@@ -68,30 +62,32 @@ const Login = ({ onAuth }) => {
               name="password"
               value={credentials.password}
               onChange={handleChange}
-              placeholder="••••••••" 
+              placeholder="Enter your password"
               required 
             />
           </div>
-          
-          <div className="form-options">
-            <label className="remember-me">
-              <input type="checkbox" />
-              <span>Remember me</span>
-            </label>
-            <a href="#" className="forgot-password">Forgot password?</a>
+
+          <div className="input-group">
+            <label htmlFor="role">Role</label>
+            <select 
+              id="role"
+              name="role"
+              value={credentials.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="employee">Employee</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
-          <button type="submit" className="login-button">Sign in</button>
+          <button type="submit" className="login-button">
+            Login
+          </button>
         </form>
 
-        <div className="admin-login-section">
-          <button onClick={() => navigate('/admin-login')} className="admin-login-button">
-            Sign in as Admin
-          </button>
-        </div>
-
         <p className="signup-link">
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Signup</Link>
         </p>
       </div>
     </div>

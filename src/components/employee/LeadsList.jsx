@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import toast from "react-hot-toast";
-
 const LeadsList = () => {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  
   const fetchLeads = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/employee/leads", {

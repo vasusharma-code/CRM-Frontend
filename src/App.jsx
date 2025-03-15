@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
 import Navbar from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
 
 function App() {
@@ -24,12 +25,13 @@ function App() {
     }
   }, []);
 
-  const handleAuth = async (email, password, isAdminLogin = false, navigate) => {
+  const handleAuth = async (email, password, name = "", role = "employee", navigate) => {
     try {
-      const response = await fetch("http://localhost:3000/api/auth/login", {
+      const endpoint = name ? "register" : "login";
+      const response = await fetch(`http://localhost:3000/api/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role: isAdminLogin ? "admin" : "employee" }),
+        body: JSON.stringify({ email, password, name, role }),
       });
 
       if (response.ok) {
@@ -42,17 +44,19 @@ function App() {
         return true;
       } else {
         const errorData = await response.json();
-        console.error(errorData.msg || "Login failed");
+        console.error(errorData.msg || "Authentication failed");
         return false;
       }
     } catch (error) {
-      console.error("Login failed", error);
+      console.error("Authentication failed", error);
       return false;
     }
   };
 
   return (
+    
     <Router>
+    <AuthProvider>
       {isAuthenticated ? (
         <div className="app-container">
           <div className="main-content">
@@ -89,7 +93,9 @@ function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       )}
+    </AuthProvider>
     </Router>
+    
   );
 }
 

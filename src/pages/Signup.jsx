@@ -1,46 +1,119 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Auth.css";
+import toast from "react-hot-toast";
 
 const Signup = ({ onAuth }) => {
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState({
+    email: "",
+    password: "",
+    name: "",
+    role: "employee", // Default role is employee
+    type: "" // Add type field
+  });
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate signup process
-    onAuth && onAuth();
+    const success = await onAuth(credentials.email, credentials.password, credentials.name, credentials.role, credentials.type, navigate);
+    if (success) {
+      toast.success("Signup successful!");
+    } else {
+      setError("Signup failed");
+    }
   };
 
-  const handleGoogleSignup = () => {
-    // Placeholder for Google signup integration
-    onAuth && onAuth();
-  };
-
-  const handleGithubSignup = () => {
-    // Placeholder for GitHub signup integration
-    onAuth && onAuth();
+  const handleChange = (e) => {
+    setCredentials({
+      ...credentials,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>Create Account</h1>
+        <h1>Signup</h1>
+        <p className="subtitle">Create a new account</p>
+
+        {error && <div className="error-message">{error}</div>}
+
         <form onSubmit={handleSubmit}>
-          <input type="text" placeholder="Full Name" required />
-          <input type="email" placeholder="Email" required />
-          <input type="password" placeholder="Password" required />
-          <button type="submit" className="primary-button">Sign Up</button>
+          <div className="input-group">
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={credentials.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={credentials.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              name="role"
+              value={credentials.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="employee">Employee</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          {credentials.role === "employee" && (
+            <div className="input-group">
+              <label htmlFor="type">Type</label>
+              <select
+                id="type"
+                name="type"
+                value={credentials.type}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Type</option>
+                <option value="sales">Sales</option>
+                <option value="support">Accounts</option>
+              </select>
+            </div>
+          )}
+
+          <button type="submit" className="signup-button">
+            Signup
+          </button>
         </form>
-        <div className="social-signup">
-          <p>Or sign up with</p>
-          <button className="social-button google" onClick={handleGoogleSignup}>
-            Sign up with Google
-          </button>
-          <button className="social-button github" onClick={handleGithubSignup}>
-            Sign up with GitHub
-          </button>
-        </div>
-        <p className="alternative">
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
       </div>
     </div>
   );

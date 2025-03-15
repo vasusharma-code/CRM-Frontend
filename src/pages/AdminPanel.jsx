@@ -5,22 +5,24 @@ import toast from "react-hot-toast";
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [callers, setCallers] = useState([]);
-  const [unassignedLeads, setUnassignedLeads] = useState([]);
+  const [leads, setLeads] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     try {
       const callersRes = await fetch("http://localhost:3000/api/admin/callers", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      const leadsRes = await fetch("http://localhost:3000/api/admin/unassigned-leads", {
+      const leadsRes = await fetch("http://localhost:3000/api/admin/leads", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const revenueRes = await fetch("http://localhost:3000/api/admin/revenue", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setCallers(await callersRes.json());
-      setUnassignedLeads(await leadsRes.json());
+      setLeads(await leadsRes.json());
       setTotalRevenue(await revenueRes.json());
     } catch (error) {
       toast.error("Error fetching data");
@@ -30,6 +32,42 @@ const AdminPanel = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleFileUpload = async (e) => {
+    e.preventDefault();
+    if (!file) return toast.error("Please select a file");
+    const formData = new FormData();
+    formData.append("file", file);
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3000/api/admin/addLeads", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        body: formData,
+      });
+      if (response.ok) {
+        toast.success("Leads added successfully");
+        fetchData();
+      } else {
+        toast.error("Failed to add leads");
+      }
+    } catch (error) {
+      toast.error("Failed to add leads");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Here, we assume that the assignedTo field in lead contains the caller ID.
+  // This helper looks up the caller's name, if available.
+  const getCallerName = (callerId) => {
+    const caller = callers.find(c => c._id === callerId);
+    return caller ? caller.name : callerId;
+  };
 
   const handleAssignLead = async (leadId, callerId) => {
     try {
@@ -63,7 +101,7 @@ const AdminPanel = () => {
           </div>
           <div className="stat-box">
             <h3>Total Leads</h3>
-            <p>{unassignedLeads.length}</p>
+            <p>{leads.length}</p>
           </div>
           <div className="stat-box">
             <h3>Active Callers</h3>
@@ -118,31 +156,52 @@ const AdminPanel = () => {
                   <tr>
                     <th>Lead Name</th>
                     <th>Phone</th>
+                    <th>Email</th>
                     <th>Status</th>
                     <th>Assign To</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {unassignedLeads.map(lead => (
+                  {leads.map(lead => (
                     <tr key={lead._id}>
                       <td>{lead.name}</td>
                       <td>{lead.contactNumber}</td>
+                      <td>{lead.email}</td>
                       <td>{lead.status}</td>
                       <td>
-                        <select onChange={(e) => handleAssignLead(lead._id, e.target.value)}>
-                          <option value="">Select Caller</option>
-                          {callers.map(caller => (
-                            <option key={caller._id} value={caller._id}>
-                              {caller.name}
-                            </option>
-                          ))}
-                        </select>
+                        {lead.assignedTo ? (
+                          getCallerName(lead.assignedTo)
+                        ) : (
+                          <select 
+                            onChange={(e) => {
+                              if(e.target.value) handleAssignLead(lead._id, e.target.value)
+                            }}
+                          >
+                            <option value="">Select Caller</option>
+                            {callers.map(caller => (
+                              <option key={caller._id} value={caller._id}>
+                                {caller.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+            <h2 className="text-2xl font-bold mt-6">Upload Leads</h2>
+            <form onSubmit={handleFileUpload} className="space-y-4">
+              <input type="file" onChange={handleFileChange} className="block" accept=".xlsx,.xls" />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary-600 text-white py-2 rounded hover:bg-primary-700 transition"
+              >
+                {loading ? "Uploading..." : "Upload Leads"}
+              </button>
+            </form>
           </div>
         )}
 
@@ -161,7 +220,7 @@ const AdminPanel = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {callers.map(caller => (
+                  {callers.filter(caller => caller.type === 'sales').map(caller => (
                     <tr key={caller._id}>
                       <td>{caller.name}</td>
                       <td>{caller.leads.alloted}</td>
@@ -171,6 +230,29 @@ const AdminPanel = () => {
                         <button className="action-btn">View Details</button>
                         <button className="action-btn delete">Remove</button>
                       </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="unassigned-leads">
+              <h2>Unassigned Leads</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Lead Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leads.filter(lead => !lead.assignedTo).map(lead => (
+                    <tr key={lead._id}>
+                      <td>{lead.name}</td>
+                      <td>{lead.contactNumber}</td>
+                      <td>{lead.email}</td>
+                      <td>{lead.status}</td>
                     </tr>
                   ))}
                 </tbody>

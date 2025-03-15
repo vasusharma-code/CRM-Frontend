@@ -14,9 +14,11 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/admin/dashboard-stats", {
+      const response = await fetch("http://localhost:3000/api/admin/dashboardStats", {
+        method: "GET",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      console.log(`response ${response}`)
       if (response.ok) {
         setStats(await response.json());
       } else {
@@ -31,6 +33,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchStats();
+    const intervalId = setInterval(fetchStats, 15000); // re-fetch every 15 seconds
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {
@@ -65,7 +69,9 @@ const Dashboard = () => {
             stats.recentActivities.map((act, idx) => (
               <li key={idx} className="bg-gray-50 p-2 rounded shadow-sm">
                 <p>{act.description}</p>
-                <p className="text-sm text-gray-500">{new Date(act.timestamp).toLocaleString()}</p>
+                <p className="text-sm text-gray-500">
+                  {new Date(act.timestamp).toLocaleString()}
+                </p>
               </li>
             ))
           ) : (

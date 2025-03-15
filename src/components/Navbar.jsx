@@ -1,33 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import "../styles/Navbar.css";
 
 const Navbar = ({ isAdmin }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  // const { logout, user } = useAuth();
+  const { logout } = useAuth(); // Use the logout function from AuthContext
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/user/profile", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUserName(data.name);
-        } else {
+    try {
+      const fetchUserName = async () => {
+        try {
+          const response = await fetch("http://localhost:3000/api/user/profile", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUserName(data.name);
+          } else {
+            toast.error("Failed to fetch user profile");
+          }
+        } catch (error) {
           toast.error("Failed to fetch user profile");
         }
-      } catch (error) {
-        toast.error("Failed to fetch user profile");
-      }
-    };
-
-    fetchUserName();
+      };
+  
+      fetchUserName();
+    }
+    catch(err){
+      console.log(`error ${err}`)
+    }
+    
   }, []);
 
   return (
@@ -89,7 +96,7 @@ const Navbar = ({ isAdmin }) => {
         </div>
         <button
           onClick={() => {
-            
+            logout();
             navigate("/login");
           }}
           className="logout-button"

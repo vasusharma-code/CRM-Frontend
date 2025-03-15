@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
+import toast from "react-hot-toast";
 
 const Login = ({ onAuth }) => {
   const navigate = useNavigate();
@@ -9,13 +10,27 @@ const Login = ({ onAuth }) => {
     password: ""
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAuth(credentials.email, credentials.password);
-  };
-
-  const handleAdminRedirect = () => {
-    navigate('/admin-login');
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.authToken);
+        localStorage.setItem("userRole", data.role);
+        toast.success("Login successful!");
+        navigate(data.role === "admin" ? "/admin" : "/");
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.msg || "Login failed");
+      }
+    } catch (error) {
+      toast.error("Login failed");
+    }
   };
 
   const handleChange = (e) => {
@@ -70,23 +85,9 @@ const Login = ({ onAuth }) => {
         </form>
 
         <div className="admin-login-section">
-          <button onClick={handleAdminRedirect} className="admin-login-button">
+          <button onClick={() => navigate('/admin-login')} className="admin-login-button">
             Sign in as Admin
           </button>
-        </div>
-
-        <div className="social-login">
-          <p>Or continue with</p>
-          <div className="social-buttons">
-            <button className="social-button google">
-              <img src="https://www.google.com/favicon.ico" alt="Google" />
-              Google
-            </button>
-            <button className="social-button github">
-              <img src="https://github.com/favicon.ico" alt="GitHub" />
-              GitHub
-            </button>
-          </div>
         </div>
 
         <p className="signup-link">

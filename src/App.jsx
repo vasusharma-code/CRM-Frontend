@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Leads from "./pages/Leads";
@@ -7,7 +7,7 @@ import Sales from "./pages/Sales";
 import AdminPanel from "./pages/AdminPanel";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import AdminLogin from "./pages/AdminLogin"; // Create this new component
+import AdminLogin from "./pages/AdminLogin";
 import Navbar from "./components/Navbar";
 import "./App.css";
 
@@ -15,20 +15,39 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const handleAuth = (email, password, isAdminLogin = false) => {
-    if (isAdminLogin) {
-      // Admin authentication
-      if (email === "admin@crm.com" && password === "admin123") {
-        setIsAuthenticated(true);
-        setIsAdmin(true);
-        return true;
-      }
-      return false;
-    } else {
-      // Regular user authentication
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("userRole");
+    if (token && userRole) {
       setIsAuthenticated(true);
-      setIsAdmin(false);
-      return true;
+      setIsAdmin(userRole === "admin");
+    }
+  }, []);
+
+  const handleAuth = async (email, password, isAdminLogin = false, navigate) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role: isAdminLogin ? "admin" : "employee" }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.authToken);
+        localStorage.setItem("userRole", data.role);
+        setIsAuthenticated(true);
+        setIsAdmin(data.role === "admin");
+        navigate(data.role === "admin" ? "/admin" : "/");
+        return true;
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.msg || "Login failed");
+        return false;
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+      return false;
     }
   };
 

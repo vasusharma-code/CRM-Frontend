@@ -1,10 +1,34 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Navbar.css";
 
 const Navbar = ({ isAdmin }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  // const { logout, user } = useAuth();
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/user/profile", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserName(data.name);
+        } else {
+          toast.error("Failed to fetch user profile");
+        }
+      } catch (error) {
+        toast.error("Failed to fetch user profile");
+      }
+    };
+
+    fetchUserName();
+  }, []);
 
   return (
     <nav className="navbar">
@@ -58,11 +82,20 @@ const Navbar = ({ isAdmin }) => {
       <div className="nav-right">
         <div className="nav-profile">
           <img 
-            src={`https://ui-avatars.com/api/?name=${isAdmin ? 'Admin' : 'User'}&background=667eea&color=fff`}
+            src={`https://ui-avatars.com/api/?name=${userName}&background=667eea&color=fff`}
             alt="Profile" 
             className="profile-image"
           />
         </div>
+        <button
+          onClick={() => {
+            
+            navigate("/login");
+          }}
+          className="logout-button"
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );

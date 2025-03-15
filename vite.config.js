@@ -1,9 +1,21 @@
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-export default {
+// https://vite.dev/config/
+export default defineConfig({
   plugins: [react()],
-  esbuild: {
-    loader: "jsx",
-    include: /src\/.*\.jsx?$/, // ✅ Allows both .jsx and .js files
-  },
-};
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    },
+    cors: {
+      origin: 'http://localhost:5173',
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization']
+    }
+  }
+});

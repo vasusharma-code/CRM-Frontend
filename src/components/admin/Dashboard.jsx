@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import "../styles/Dashboard.css";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({

@@ -1,18 +1,21 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/Auth.css";
+import toast from "react-hot-toast";
 
 const AdminLogin = ({ onAuth }) => {
+  const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     email: "",
     password: ""
   });
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (credentials.email === "admin@crm.com" && credentials.password === "admin123") {
-      onAuth(credentials.email, credentials.password, true);
+    const success = await onAuth(credentials.email, credentials.password, true, navigate);
+    if (success) {
+      toast.success("Admin login successful!");
     } else {
       setError("Invalid admin credentials");
     }

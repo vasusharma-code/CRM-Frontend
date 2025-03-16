@@ -10,6 +10,7 @@ import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
+import toast from "react-hot-toast";
 import "./App.css";
 
 function App() {
@@ -25,77 +26,79 @@ function App() {
     }
   }, []);
 
-  const handleAuth = async (email, password, name = "", role = "employee", navigate) => {
+  const handleAuth = async (email, password, name = "", role = "employee", type = "") => {
     try {
       const endpoint = name ? "register" : "login";
       const response = await fetch(`http://localhost:3000/api/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, role }),
+        body: JSON.stringify({ email, password, name, role, type }),
       });
 
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.authToken);
         localStorage.setItem("userRole", data.role);
+        localStorage.setItem("name", name);
+        localStorage.setItem("email", email);
         setIsAuthenticated(true);
         setIsAdmin(data.role === "admin");
-        navigate(data.role === "admin" ? "/admin" : "/");
+        toast.success("Logged in successfully.");
+        // Force full page reload on redirection:
+        window.location.href = data.role === "admin" ? "/admin" : "/";
         return true;
       } else {
         const errorData = await response.json();
-        console.error(errorData.msg || "Authentication failed");
+        toast.error(errorData.msg || "Authentication failed");
         return false;
       }
     } catch (error) {
-      console.error("Authentication failed", error);
+      toast.error("Authentication failed");
       return false;
     }
   };
 
   return (
-    
     <Router>
-    <AuthProvider>
-      {isAuthenticated ? (
-        <div className="app-container">
-          <div className="main-content">
-            <Navbar isAdmin={isAdmin} />
-            <main className="content-area">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/leads" element={<Leads />} />
-                <Route path="/callers" element={<Callers />} />
-                <Route path="/sales" element={<Sales />} />
-                <Route 
-                  path="/admin" 
-                  element={
-                    isAdmin ? (
-                      <AdminPanel />
-                    ) : (
-                      <Navigate to="/admin-login" replace />
-                    )
-                  } 
-                />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
+      <AuthProvider>
+        {isAuthenticated ? (
+          <div className="app-container">
+            <div className="main-content">
+              <Navbar isAdmin={isAdmin} />
+              <main className="content-area">
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/leads" element={<Leads />} />
+                  <Route path="/callers" element={<Callers />} />
+                  <Route path="/sales" element={<Sales />} />
+                  <Route 
+                    path="/admin" 
+                    element={
+                      isAdmin ? (
+                        <AdminPanel />
+                      ) : (
+                        <Navigate to="/admin-login" replace />
+                      )
+                    } 
+                  />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+            </div>
           </div>
-        </div>
-      ) : (
-        <Routes>
-          <Route path="/login" element={<Login onAuth={handleAuth} />} />
-          <Route path="/signup" element={<Signup onAuth={handleAuth} />} />
-          <Route 
-            path="/admin-login" 
-            element={<AdminLogin onAuth={handleAuth} />} 
-          />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      )}
-    </AuthProvider>
+        ) : (
+          <Routes>
+            <Route path="/login" element={<Login onAuth={handleAuth} />} />
+            <Route path="/signup" element={<Signup onAuth={handleAuth} />} />
+            <Route 
+              path="/admin-login" 
+              element={<AdminLogin onAuth={handleAuth} />} 
+            />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        )}
+      </AuthProvider>
     </Router>
-    
   );
 }
 

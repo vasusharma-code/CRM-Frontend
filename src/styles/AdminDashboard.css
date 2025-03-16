@@ -1,0 +1,114 @@
+/* Overall Admin Dashboard Container */
+.admin-dashboard-container {
+    padding: 2rem;
+    background-color: #f7fafc;
+    min-height: calc(100vh - 4rem);
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Admin Dashboard Title */
+  .admin-dashboard-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1a202c;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Stats Container */
+  .admin-stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  /* Stat Card */
+  .admin-stat-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s ease;
+    cursor: default;
+  }
+  
+  .admin-stat-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .admin-stat-card h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+  }
+  
+  .admin-stat-card p {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  /* Recent Activities Section */
+  .admin-recent-activities {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+  }
+  
+  .admin-recent-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .admin-activities-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .admin-activity-item {
+    background: #f7fafc;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .admin-activity-description {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #4a5568;
+  }
+  
+  .admin-activity-timestamp {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #718096;
+  }
+  
+  /* Loading State */
+  .admin-loading {
+    text-align: center;
+    font-size: 1.25rem;
+    padding: 2rem;
+    color: #2d3748;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .admin-dashboard-container {
+      padding: 1rem;
+    }
+  
+    .admin-stats-container {
+      grid-template-columns: 1fr;
+    }
+  }

@@ -1,19 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Auth.css";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+
 
 const Signup = ({ onAuth }) => {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-    name: "",
-    role: "employee", // Default role is employee
-    type: "" // Add type field
-  });
+  const {credentials, setCredentials} = useAuth()
   const [error, setError] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = await onAuth(credentials.email, credentials.password, credentials.name, credentials.role, credentials.type, navigate);
@@ -23,7 +18,9 @@ const Signup = ({ onAuth }) => {
       setError("Signup failed");
     }
   };
-
+  useEffect(() => {
+    console.log(credentials)
+  }, [credentials])
   const handleChange = (e) => {
     setCredentials({
       ...credentials,
@@ -103,9 +100,8 @@ const Signup = ({ onAuth }) => {
                 onChange={handleChange}
                 required
               >
-                <option value="">Select Type</option>
                 <option value="sales">Sales</option>
-                <option value="support">Accounts</option>
+                <option value="accounts">Accounts</option>
               </select>
             </div>
           )}

@@ -1,18 +1,21 @@
-.dashboard {
+/* Overall Dashboard Container */
+.dashboard-container {
   padding: 2rem;
+  background-color: #f7fafc;
+  min-height: calc(100vh - 4rem);
+  font-family: Arial, sans-serif;
 }
 
-.dashboard-header {
-  margin-bottom: 2rem;
-}
-
-.dashboard-header h1 {
-  font-size: 1.875rem;
+/* Dashboard Title */
+.dashboard-title {
+  font-size: 2rem;
   font-weight: 600;
   color: #1a202c;
+  text-align: center;
   margin-bottom: 1.5rem;
 }
 
+/* Stats Container */
 .stats-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -20,146 +23,90 @@
   margin-bottom: 2rem;
 }
 
+/* Stat Card */
 .stat-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: white;
+  background: #ffffff;
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s ease;
+  cursor: default;
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
 }
 
-.stat-icon {
-  font-size: 2rem;
-  padding: 1rem;
+.stat-card h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+}
+
+/* Recent Activities Section */
+.recent-activities-section {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.recent-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.activities-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-item {
   background: #f7fafc;
   border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.stat-info h3 {
-  font-size: 0.875rem;
+.activity-description {
+  margin: 0;
+  font-size: 0.95rem;
   color: #4a5568;
-  margin-bottom: 0.25rem;
 }
 
-.stat-info p {
-  font-size: 1.5rem;
-  font-weight: 600;
+.activity-timestamp {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+/* Loading state styling */
+.dashboard-loading {
+  text-align: center;
+  font-size: 1.25rem;
+  padding: 2rem;
   color: #2d3748;
 }
 
-.leads-table-container {
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.leads-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.leads-table th,
-.leads-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.leads-table th {
-  background: #f7fafc;
-  font-weight: 500;
-  color: #4a5568;
-  font-size: 0.875rem;
-}
-
-.status-select {
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid #e2e8f0;
-  font-size: 0.875rem;
-  width: 100%;
-}
-
-.status-select.will_pay {
-  color: #2f855a;
-  background: #f0fff4;
-}
-
-.status-select.not_answered {
-  color: #c53030;
-  background: #fff5f5;
-}
-
-.status-select.not_sure {
-  color: #c05621;
-  background: #fffaf0;
-}
-
-.proof-upload {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.upload-button {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background: #667eea;
-  color: white;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.upload-button:hover {
-  background: #5a67d8;
-}
-
-.upload-button input {
-  display: none;
-}
-
-.proof-preview {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.proof-preview img {
-  width: 40px;
-  height: 40px;
-  border-radius: 0.25rem;
-  object-fit: cover;
-}
-
-.proof-preview button {
-  padding: 0.25rem 0.5rem;
-  background: #feb2b2;
-  color: #c53030;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  cursor: pointer;
-}
-
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .dashboard {
+  .dashboard-container {
     padding: 1rem;
   }
-
-  .leads-table-container {
-    overflow-x: auto;
-  }
-
   .stats-container {
     grid-template-columns: 1fr;
   }

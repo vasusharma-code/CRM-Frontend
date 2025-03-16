@@ -1,57 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import toast from "react-hot-toast";
+import toast, { LoaderIcon } from "react-hot-toast";
 import "../styles/Navbar.css";
 
 const Navbar = ({ isAdmin }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const { logout } = useAuth(); // Use the logout function from AuthContext
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const { logout } = useAuth(); // Ensure your AuthContext provides a user object containing name, email, role
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
-
+  
   useEffect(() => {
-    try {
-      const fetchUserName = async () => {
-        try {
-          const response = await fetch("http://localhost:3000/api/user/profile", {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setUserName(data.name);
-          } else {
-            toast.error("Failed to fetch user profile");
-          }
-        } catch (error) {
+    // Fetch the user's profile (or use the user object from context if available)
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/user/profile", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserName(data.name);
+        } else {
           toast.error("Failed to fetch user profile");
         }
-      };
-  
-      fetchUserName();
-    }
-    catch(err){
-      console.log(`error ${err}`)
-    }
-    
+      } catch (error) {
+        toast.error("Failed to fetch user profile");
+      }
+    };
+    fetchUserProfile();
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  const toggleProfileDropdown = () => {
+    setShowProfileDropdown((prev) => !prev);
+  };
 
   return (
     <nav className="navbar">
       <div className="navbar-brand">
         <h2 className="logo">CRM Dashboard</h2>
         <button 
-          className="mobile-menu" 
+          className="mobile-menu-btn" 
           onClick={() => setIsOpen(!isOpen)}
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <span className="bar"></span>
+          <span className="bar"></span>
+          <span className="bar"></span>
         </button>
       </div>
-
-      <ul className={`nav-links ${isOpen ? 'active' : ''}`}>
+      <ul className={`nav-links ${isOpen ? "open" : ""}`}>
         <li>
           <Link to="/" className={location.pathname === "/" ? "active" : ""}>
             <span className="icon">🏠</span>
@@ -85,24 +88,24 @@ const Navbar = ({ isAdmin }) => {
           </li>
         )}
       </ul>
-
       <div className="nav-right">
-        <div className="nav-profile">
+        <div className="nav-profile" onClick={toggleProfileDropdown}>
           <img 
             src={`https://ui-avatars.com/api/?name=${userName}&background=667eea&color=fff`}
             alt="Profile" 
             className="profile-image"
           />
         </div>
-        <button
-          onClick={() => {
-            logout();
-            navigate("/login");
-          }}
-          className="logout-button"
-        >
-          Logout
-        </button>
+        {showProfileDropdown && (
+          <div className="profile-dropdown">
+            <p className="profile-name">{localStorage.getItem('name')}</p>
+            <p className="profile-email">{localStorage.getItem('email')}</p>
+            <p className="profile-role">{localStorage.getItem('userRole')}</p>
+            <button className="dropdown-logout" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );

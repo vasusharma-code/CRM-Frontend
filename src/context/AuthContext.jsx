@@ -5,10 +5,16 @@ import toast from "react-hot-toast";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [credentials, setCredentials] = useState({
+      email: "",
+      password: "",
+      name: "",
+      role: "employee", // Default role is employee
+      type: "sales" // Add type field
+    });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const navigate = useNavigate();
-
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("userRole");
@@ -18,45 +24,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const handleAuth = async (email, password, name = "", role = "employee") => {
-    try {
-      const endpoint = name ? "register" : "login";
-      const response = await fetch(`http://localhost:3000/api/auth/${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, role }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.authToken);
-        localStorage.setItem("userRole", data.role);
-        setIsAuthenticated(true);
-        setIsAdmin(data.role === "admin");
-        toast.success("Logged in successfully.");
-        navigate(data.role === "admin" ? "/admin" : "/");
-        return true;
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.msg || "Authentication failed");
-        return false;
-      }
-    } catch (error) {
-      toast.error("Authentication failed");
-      return false;
-    }
-  };
-
+  
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
     setIsAuthenticated(false);
     setIsAdmin(false);
-    navigate("/login");
+    window.location.href = "/login";
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isAdmin, handleAuth, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isAdmin, logout, credentials, setCredentials }}>
       {children}
     </AuthContext.Provider>
   );

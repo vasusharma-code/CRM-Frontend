@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Link, useNavigate } from "react-router-dom";
 import "../styles/Auth.css";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 const AdminLogin = ({ onAuth }) => {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: ""
-  });
+  const {credentials, setCredentials} = useAuth()
   const [error, setError] = useState("");
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);

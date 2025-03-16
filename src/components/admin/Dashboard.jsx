@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import "../../styles/AdminDashboard.css";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -7,14 +8,14 @@ const Dashboard = () => {
     assignedLeads: 0,
     unassignedLeads: 0,
     totalEmployees: 0,
-    recentActivities: [],
+    recentActivities: []
   });
   const [loading, setLoading] = useState(true);
 
   const fetchStats = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/admin/dashboard-stats", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       if (response.ok) {
         setStats(await response.json());
@@ -30,47 +31,50 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchStats();
+    // Optionally refresh stats periodically
+    const intervalId = setInterval(fetchStats, 15000);
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return <div className="admin-loading">Loading...</div>;
   }
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Dashboard Overview</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Total Leads</h3>
-          <p className="text-2xl">{stats.totalLeads}</p>
+    <div className="admin-dashboard-container">
+      <h2 className="admin-dashboard-title">Dashboard Overview</h2>
+      <div className="admin-stats-container">
+        <div className="admin-stat-card">
+          <h3>Total Leads</h3>
+          <p>{stats.totalLeads}</p>
         </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Assigned Leads</h3>
-          <p className="text-2xl">{stats.assignedLeads}</p>
+        <div className="admin-stat-card">
+          <h3>Assigned Leads</h3>
+          <p>{stats.assignedLeads}</p>
         </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Unassigned Leads</h3>
-          <p className="text-2xl">{stats.unassignedLeads}</p>
+        <div className="admin-stat-card">
+          <h3>Unassigned Leads</h3>
+          <p>{stats.unassignedLeads}</p>
         </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Total Employees</h3>
-          <p className="text-2xl">{stats.totalEmployees}</p>
+        <div className="admin-stat-card">
+          <h3>Total Employees</h3>
+          <p>{stats.totalEmployees}</p>
         </div>
       </div>
-      <div>
-        <h3 className="text-xl font-bold">Recent Activities</h3>
-        <ul className="mt-2 space-y-2">
-          {stats.recentActivities.length > 0 ? (
-            stats.recentActivities.map((act, idx) => (
-              <li key={idx} className="bg-gray-50 p-2 rounded shadow-sm">
-                <p>{act.description}</p>
-                <p className="text-sm text-gray-500">{new Date(act.timestamp).toLocaleString()}</p>
+      <div className="admin-recent-activities">
+        <h3 className="admin-recent-title">Recent Activities</h3>
+        {stats.recentActivities.length > 0 ? (
+          <ul className="admin-activities-list">
+            {stats.recentActivities.map((act, idx) => (
+              <li key={idx} className="admin-activity-item">
+                <p className="admin-activity-description">{act.description}</p>
+                <p className="admin-activity-timestamp">{new Date(act.timestamp).toLocaleString()}</p>
               </li>
-            ))
-          ) : (
-            <p>No recent activities</p>
-          )}
-        </ul>
+            ))}
+          </ul>
+        ) : (
+          <p className="admin-no-activities">No recent activities</p>
+        )}
       </div>
     </div>
   );

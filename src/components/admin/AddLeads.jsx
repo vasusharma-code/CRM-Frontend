@@ -16,7 +16,7 @@ const AddLeads = () => {
     formData.append("file", file);
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/admin/addLeads", {
+      const response = await fetch("http://localhost:3000/api/admin/addLeads", {
         method: "POST",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: formData,

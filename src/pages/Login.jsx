@@ -4,19 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/Auth.css";
 import toast from "react-hot-toast";
 
-const Login = () => {
+const Login = ({ onAuth }) => {
   const navigate = useNavigate();
-  const { handleAuth } = useAuth();
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-    role: "employee" // Default role is employee
-  });
+  const { credentials, setCredentials } = useAuth();
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await handleAuth(credentials.email, credentials.password, "", credentials.role);
+    const success = await onAuth(credentials.email, credentials.password, "", credentials.role);
     if (success) {
       toast.success("Login successful!");
       navigate("/");
@@ -51,6 +46,7 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Enter your email"
               required 
+              autoComplete="username"
             />
           </div>
           
@@ -64,6 +60,7 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Enter your password"
               required 
+              autoComplete="current-password"
             />
           </div>
 

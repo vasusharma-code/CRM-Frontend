@@ -18,7 +18,6 @@ const Dashboard = () => {
         method: "GET",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      console.log(`response ${response}`)
       if (response.ok) {
         setStats(await response.json());
       } else {
@@ -33,51 +32,49 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchStats();
-    const intervalId = setInterval(fetchStats, 15000); // re-fetch every 15 seconds
+    const intervalId = setInterval(fetchStats, 15000); // refresh every 15 seconds
     return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return <div className="dashboard-loading">Loading...</div>;
   }
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Dashboard Overview</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Total Leads</h3>
-          <p className="text-2xl">{stats.totalLeads}</p>
+    <div className="dashboard-container">
+      <h2 className="dashboard-title">Budding Mariners CRM Dashboard</h2>
+      <div className="stats-container">
+        <div className="stat-card">
+          <h3>Total Leads</h3>
+          <p>{stats.totalLeads}</p>
         </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Assigned Leads</h3>
-          <p className="text-2xl">{stats.assignedLeads}</p>
+        <div className="stat-card">
+          <h3>Assigned Leads</h3>
+          <p>{stats.assignedLeads}</p>
         </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Unassigned Leads</h3>
-          <p className="text-2xl">{stats.unassignedLeads}</p>
+        <div className="stat-card">
+          <h3>Unassigned Leads</h3>
+          <p>{stats.unassignedLeads}</p>
         </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Total Employees</h3>
-          <p className="text-2xl">{stats.totalEmployees}</p>
+        <div className="stat-card">
+          <h3>Total Employees</h3>
+          <p>{stats.totalEmployees}</p>
         </div>
       </div>
-      <div>
-        <h3 className="text-xl font-bold">Recent Activities</h3>
-        <ul className="mt-2 space-y-2">
-          {stats.recentActivities.length > 0 ? (
-            stats.recentActivities.map((act, idx) => (
-              <li key={idx} className="bg-gray-50 p-2 rounded shadow-sm">
-                <p>{act.description}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(act.timestamp).toLocaleString()}
-                </p>
+      <div className="recent-activities-section">
+        <h3 className="recent-title">Recent Activities</h3>
+        {stats.recentActivities.length > 0 ? (
+          <ul className="activities-list">
+            {stats.recentActivities.map((act, idx) => (
+              <li key={idx} className="activity-item">
+                <p className="activity-description">{act.description}</p>
+                <p className="activity-timestamp">{new Date(act.timestamp).toLocaleString()}</p>
               </li>
-            ))
-          ) : (
-            <p>No recent activities</p>
-          )}
-        </ul>
+            ))}
+          </ul>
+        ) : (
+          <p className="no-activities">No recent activities</p>
+        )}
       </div>
     </div>
   );

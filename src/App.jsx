@@ -8,6 +8,8 @@ import AdminPanel from "./pages/AdminPanel";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
+import AccountsDashboard from "./pages/AccountsDashboard"; // Import AccountsDashboard
+import OperationsDashboard from "./pages/OperationsDashboard"; // Import OperationsDashboard
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
 import toast from "react-hot-toast";
@@ -16,13 +18,16 @@ import "./App.css";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [employeeType, setEmployeeType] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("userRole");
+    const empType = localStorage.getItem("employeeType");
     if (token && userRole) {
       setIsAuthenticated(true);
       setIsAdmin(userRole === "admin");
+      setEmployeeType(empType);
     }
   }, []);
 
@@ -41,8 +46,10 @@ function App() {
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("name", name);
         localStorage.setItem("email", email);
+        localStorage.setItem("employeeType", type);
         setIsAuthenticated(true);
         setIsAdmin(data.role === "admin");
+        setEmployeeType(type);
         toast.success("Logged in successfully.");
         // Force full page reload on redirection:
         window.location.href = data.role === "admin" ? "/admin" : "/";
@@ -68,7 +75,7 @@ function App() {
               <main className="content-area">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/leads" element={<Leads />} />
+                  <Route path="/leads" element={employeeType === "accounts" ? <AccountsDashboard /> : employeeType === "operations" ? <OperationsDashboard /> : <Leads />} />
                   <Route path="/callers" element={<Callers />} />
                   <Route path="/sales" element={<Sales />} />
                   <Route 
@@ -81,6 +88,8 @@ function App() {
                       )
                     } 
                   />
+                  <Route path="/accounts" element={<AccountsDashboard />} /> {/* Add accounts dashboard route */}
+                  <Route path="/operations" element={<OperationsDashboard />} /> {/* Add operations dashboard route */}
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

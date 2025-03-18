@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../styles/AdminPanel.css";
 import toast from "react-hot-toast";
+import AccountsDashboard from "./AccountsDashboard"; // Import AccountsDashboard
+import OperationsDashboard from "./OperationsDashboard"; // Import OperationsDashboard
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -9,6 +11,7 @@ const AdminPanel = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [neededLeads, setNeededLeads] = useState({});
 
   const fetchData = async () => {
     try {
@@ -23,7 +26,8 @@ const AdminPanel = () => {
       });
       setCallers(await callersRes.json());
       setLeads(await leadsRes.json());
-      setTotalRevenue(await revenueRes.json());
+      const revenueData = await revenueRes.json();
+      setTotalRevenue(revenueData.totalRevenue);
     } catch (error) {
       toast.error("Error fetching data");
     }
@@ -90,6 +94,47 @@ const AdminPanel = () => {
     }
   };
 
+  const handleNeededLeadsChange = (callerId, value) => {
+    setNeededLeads({
+      ...neededLeads,
+      [callerId]: value
+    });
+  };
+
+  const handleSaveNeededLeads = async (callerId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/admin/updateNeededLeads/${callerId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ neededLeads: neededLeads[callerId] }),
+      });
+      if (response.ok) {
+        toast.success("Needed leads updated successfully");
+        fetchData();
+      } else {
+        toast.error("Failed to update needed leads");
+      }
+    } catch (error) {
+      toast.error("Failed to update needed leads");
+    }
+  };
+
+  const getRemainingLeadsCount = (callerId) => {
+    return leads.filter(lead => lead.assignedTo === callerId && lead.status === 'new').length;
+  };
+
+  const getClosedDealsCount = (callerId) => {
+    return leads.filter(lead => lead.assignedTo === callerId && lead.paymentVerified === 'verified' && lead.operationStatus === 'completed').length;
+  };
+
+  const getRevenueGenerated = (callerId) => {
+    return leads.filter(lead => lead.assignedTo === callerId && lead.paymentVerified === 'verified' && lead.operationStatus === 'completed')
+                .reduce((sum, lead) => sum + parseFloat(lead.amount || 0), 0);
+  };
+
   return (
     <div className="admin-dashboard">
       <div className="admin-header">
@@ -130,17 +175,24 @@ const AdminPanel = () => {
           Manage Callers
         </button>
         <button 
-          className={`tab ${activeTab === 'reports' ? 'active' : ''}`}
-          onClick={() => setActiveTab('reports')}
+          className={`tab ${activeTab === 'accounts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('accounts')}
         >
-          Reports
+          Accounts Dashboard
         </button>
+        <button 
+          className={`tab ${activeTab === 'operations' ? 'active' : ''}`}
+          onClick={() => setActiveTab('operations')}
+        >
+          Operations Dashboard
+        </button>
+        
       </div>
 
       <div className="admin-content">
         {activeTab === 'overview' && (
           <div className="overview-section">
-            <h2>Performance Overview</h2>
+            <h2 className="section-title">Performance Overview</h2>
             <div className="performance-chart">
               {/* Add your chart component here */}
             </div>
@@ -149,8 +201,8 @@ const AdminPanel = () => {
 
         {activeTab === 'leads' && (
           <div className="leads-section">
-            <h2>Lead Management</h2>
-            <div className="leads-table-container">
+            <h2 className="section-title">Lead Management</h2>
+            <div className="table-container">
               <table>
                 <thead>
                   <tr>
@@ -191,13 +243,13 @@ const AdminPanel = () => {
                 </tbody>
               </table>
             </div>
-            <h2 className="text-2xl font-bold mt-6">Upload Leads</h2>
-            <form onSubmit={handleFileUpload} className="space-y-4">
-              <input type="file" onChange={handleFileChange} className="block" accept=".xlsx,.xls" />
+            <h2 className="section-title">Upload Leads</h2>
+            <form onSubmit={handleFileUpload} className="form-section">
+              <input type="file" onChange={handleFileChange} className="input-file" accept=".xlsx,.xls" />
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary-600 text-white py-2 rounded hover:bg-primary-700 transition"
+                className="primary-btn"
               >
                 {loading ? "Uploading..." : "Upload Leads"}
               </button>
@@ -207,15 +259,17 @@ const AdminPanel = () => {
 
         {activeTab === 'callers' && (
           <div className="callers-section">
-            <h2>Caller Management</h2>
-            <div className="callers-table-container">
+            <h2 className="section-title">Caller Management</h2>
+            <div className="table-container">
               <table>
                 <thead>
                   <tr>
                     <th>Name</th>
                     <th>Assigned Leads</th>
-                    <th>Completed Calls</th>
+                    <th>Remaining Leads</th>
+                    <th>Closed Deals</th>
                     <th>Revenue Generated</th>
+                    <th>Needed Leads</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -224,11 +278,18 @@ const AdminPanel = () => {
                     <tr key={caller._id}>
                       <td>{caller.name}</td>
                       <td>{caller.leads.alloted}</td>
-                      <td>{caller.completedCalls}</td>
-                      <td>${caller.revenue}</td>
+                      <td>{getRemainingLeadsCount(caller._id)}</td>
+                      <td>{getClosedDealsCount(caller._id)}</td>
+                      <td>${getRevenueGenerated(caller._id)}</td>
                       <td>
-                        <button className="action-btn">View Details</button>
-                        <button className="action-btn delete">Remove</button>
+                        <input 
+                          type="number" 
+                          value={neededLeads[caller._id] || caller.neededLeads} 
+                          onChange={(e) => handleNeededLeadsChange(caller._id, e.target.value)} 
+                        />
+                      </td>
+                      <td>
+                        <button className="action-btn" onClick={() => handleSaveNeededLeads(caller._id)}>Save</button>
                       </td>
                     </tr>
                   ))}
@@ -236,41 +297,55 @@ const AdminPanel = () => {
               </table>
             </div>
             <div className="unassigned-leads">
-              <h2>Unassigned Leads</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Lead Name</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leads.filter(lead => !lead.assignedTo).map(lead => (
-                    <tr key={lead._id}>
-                      <td>{lead.name}</td>
-                      <td>{lead.contactNumber}</td>
-                      <td>{lead.email}</td>
-                      <td>{lead.status}</td>
+              <h2 className="section-title">Unassigned Leads</h2>
+              <div className="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Lead Name</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {leads.filter(lead => !lead.assignedTo).map(lead => (
+                      <tr key={lead._id}>
+                        <td>{lead.name}</td>
+                        <td>{lead.contactNumber}</td>
+                        <td>{lead.email}</td>
+                        <td>{lead.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'accounts' && (
+          <div className="accounts-section">
+            <AccountsDashboard />
+          </div>
+        )}
+
+        {activeTab === 'operations' && (
+          <div className="operations-section">
+            <OperationsDashboard />
           </div>
         )}
 
         {activeTab === 'reports' && (
           <div className="reports-section">
-            <h2>Revenue Reports</h2>
+            <h2 className="section-title">Revenue Reports</h2>
             <div className="report-filters">
               <select>
                 <option>This Week</option>
                 <option>This Month</option>
                 <option>Last 3 Months</option>
               </select>
-              <button className="download-btn">Download Report</button>
+              <button className="primary-btn">Download Report</button>
             </div>
             <div className="revenue-chart">
               {/* Add your revenue chart component here */}

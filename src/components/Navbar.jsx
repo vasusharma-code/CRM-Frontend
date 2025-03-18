@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import toast, { LoaderIcon } from "react-hot-toast";
+import toast from "react-hot-toast";
 import "../styles/Navbar.css";
 
 const Navbar = ({ isAdmin }) => {
@@ -11,7 +11,8 @@ const Navbar = ({ isAdmin }) => {
   const { logout } = useAuth(); // Ensure your AuthContext provides a user object containing name, email, role
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
-  
+  const [employeeType, setEmployeeType] = useState("");
+
   useEffect(() => {
     // Fetch the user's profile (or use the user object from context if available)
     const fetchUserProfile = async () => {
@@ -22,6 +23,7 @@ const Navbar = ({ isAdmin }) => {
         if (response.ok) {
           const data = await response.json();
           setUserName(data.name);
+          setEmployeeType(localStorage.getItem("employeeType"));
         } else {
           toast.error("Failed to fetch user profile");
         }
@@ -84,6 +86,22 @@ const Navbar = ({ isAdmin }) => {
             <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
               <span className="icon">⚙️</span>
               Admin
+            </Link>
+          </li>
+        )}
+        {employeeType === "accounts" && (
+          <li>
+            <Link to="/accounts" className={location.pathname === "/accounts" ? "active" : ""}>
+              <span className="icon">📊</span>
+              Accounts Dashboard
+            </Link>
+          </li>
+        )}
+        {employeeType === "operations" && (
+          <li>
+            <Link to="/operations" className={location.pathname === "/operations" ? "active" : ""}>
+              <span className="icon">📊</span>
+              Operations Dashboard
             </Link>
           </li>
         )}

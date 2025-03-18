@@ -9,6 +9,7 @@ const Leads = () => {
   const [loading, setLoading] = useState(true);
   // State to track uploaded proof files by lead ID
   const [proofFiles, setProofFiles] = useState({});
+  const [comments, setComments] = useState({});
 
   const fetchData = async () => {
     try {
@@ -113,6 +114,34 @@ const Leads = () => {
     }
   };
 
+  const handleCommentChange = (leadId, comment) => {
+    setComments({
+      ...comments,
+      [leadId]: comment
+    });
+  };
+
+  const handleSaveComment = async (leadId) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/employee/updateLeadComment", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ leadId, comment: comments[leadId] }),
+      });
+      if (response.ok) {
+        toast.success("Comment saved successfully");
+        fetchData();
+      } else {
+        toast.error("Failed to save comment");
+      }
+    } catch (error) {
+      toast.error("Failed to save comment");
+    }
+  };
+
   if (loading)
     return <div className="loading">Loading...</div>;
 
@@ -124,8 +153,12 @@ const Leads = () => {
           <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Email</th>
+            <th>Contact Number</th>
             <th>Status</th>
             <th>Assigned To</th>
+            <th>Comment</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -134,6 +167,8 @@ const Leads = () => {
               <tr>
                 <td>{lead._id}</td>
                 <td>{lead.name}</td>
+                <td>{lead.email}</td>
+                <td>{lead.contactNumber}</td>
                 <td>
                   <select
                     value={lead.status}
@@ -148,10 +183,19 @@ const Leads = () => {
                   </select>
                 </td>
                 <td>{lead.assignedTo ? getCallerName(lead.assignedTo) : "Unassigned"}</td>
+                <td>
+                  <textarea
+                    value={comments[lead._id] || lead.comment || ""}
+                    onChange={(e) => handleCommentChange(lead._id, e.target.value)}
+                  />
+                </td>
+                <td>
+                  <button onClick={() => handleSaveComment(lead._id)}>Save</button>
+                </td>
               </tr>
-              {lead.status === "closed-success" && (
+              {lead.paymentProof ? "": lead.status === "closed-success" &&(
                 <tr className="proof-upload-row" key={lead._id + "-upload"}>
-                  <td colSpan="4">
+                  <td colSpan="6">
                     <div className="proof-upload">
                       <input
                         type="file"
@@ -170,7 +214,7 @@ const Leads = () => {
         </tbody>
       </table>
       {revenue && (
-        <div className="revenue-info">
+        <div>
           <h2>Total Revenue: ${revenue.totalRevenue}</h2>
         </div>
       )}

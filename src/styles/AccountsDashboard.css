@@ -1,0 +1,85 @@
+/* Global container styling */
+.accounts-dashboard {
+  padding: 2rem;
+  background-color: #fff;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 2rem auto;
+  max-width: 1200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* Dashboard header */
+.dashboard-heading {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #0078d4;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Table styling */
+.leads-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.leads-table thead tr {
+  background-color: #0078d4;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.leads-table th,
+.leads-table td {
+  padding: 1rem;
+  border: 1px solid #e2e2e2;
+  text-align: left;
+}
+
+.leads-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.leads-table tbody tr:hover {
+  background-color: #eef5fb;
+}
+
+/* Link styling for payment proof */
+.leads-table a {
+  color: #0078d4;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.leads-table a:hover {
+  text-decoration: underline;
+}
+
+/* Select dropdown styling */
+.leads-table select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.leads-table select:focus {
+  border-color: #0078d4;
+}
+
+/* Loading state */
+.loading {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 2rem;
+  color: #555;
+}

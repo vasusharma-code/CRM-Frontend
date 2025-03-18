@@ -1,11 +1,11 @@
-/* Main container styling */
+
 .leads {
   padding: 20px;
   background-color: #f9fafb;
   font-family: Arial, sans-serif;
 }
 
-/* Table container with rounded corners and shadow */
+
 .leads table {
   width: 100%;
   border-collapse: separate;
@@ -13,11 +13,11 @@
   margin-top: 20px;
   background-color: #fff;
   border-radius: 8px;
-  overflow: hidden; /* clips table corners */
+  overflow: hidden; 
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Header cells */
+
 .leads th {
   padding: 15px;
   text-align: left;
@@ -27,7 +27,7 @@
   border-bottom: 2px solid #1a252f;
 }
 
-/* Data cells */
+
 .leads td {
   padding: 15px;
   font-size: 14px;
@@ -35,31 +35,30 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* Hover effects for rows */
 .leads tr:hover {
   background-color: #f1f5f9;
 }
 
-/* Additional styling for proof upload rows */
+
 .leads .proof-upload-row td {
   background-color: #e2f0ff;
   border-bottom: 1px solid #cbd5e1;
 }
 
-/* Additional styling for proof upload rows */
+
 .proof-upload-row td {
   background-color: #e2f0ff;
   border-bottom: 1px solid #cbd5e1;
 }
 
-/* Styles for the proof upload container */
+
 .proof-upload {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* File input styling */
+
 .file-input {
   padding: 6px;
   font-size: 14px;
@@ -67,7 +66,7 @@
   border-radius: 4px;
 }
 
-/* Upload button styling */
+
 .upload-button {
   padding: 8px 16px;
   background-color: #667eea;
@@ -82,21 +81,21 @@
   background-color: #5a67d8;
 }
 
-/* Loading state styling */
+
 .loading {
   text-align: center;
   font-size: 18px;
   padding: 40px 0;
 }
 
-/* Optional: Heading style for leads page */
+
 .leads-heading {
   font-size: 28px;
   margin-bottom: 20px;
   color: #2c3e50;
 }
 
-/* Responsive layout for smaller screens */
+
 @media (max-width: 768px) {
   .leads table,
   .leads thead,
@@ -117,7 +116,7 @@
     position: relative;
   }
   
-  /* Add pseudo-elements to label each block */
+
   .leads th::before,
   .leads td::before {
     position: absolute;
@@ -127,7 +126,7 @@
     text-transform: uppercase;
   }
   
-  /* Adjust labels based on the column order */
+ 
   .leads th:nth-of-type(1)::before,
   .leads td:nth-of-type(1)::before { content: "ID"; }
   .leads th:nth-of-type(2)::before,
@@ -136,4 +135,5 @@
   .leads td:nth-of-type(3)::before { content: "Status"; }
   .leads th:nth-of-type(4)::before,
   .leads td:nth-of-type(4)::before { content: "Assigned To"; }
-}
+} 
+

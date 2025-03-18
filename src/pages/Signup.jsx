@@ -102,6 +102,7 @@ const Signup = ({ onAuth }) => {
               >
                 <option value="sales">Sales</option>
                 <option value="accounts">Accounts</option>
+                <option value="operations">Operations</option>
               </select>
             </div>
           )}

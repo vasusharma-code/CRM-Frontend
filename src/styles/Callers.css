@@ -1,0 +1,87 @@
+/* Callers Section */
+.callers {
+  padding: 1.5rem;
+  margin: 1.5rem auto;
+  max-width: 1200px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: auto; /* Prevents horizontal scrolling */
+}
+
+/* Heading */
+.callers h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1e3a8a; /* Dark blue like leads table */
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+/* Table Styles */
+.callers table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  min-width: 900px; /* Ensures structure consistency */
+}
+
+/* Table Headers */
+.callers th {
+  background-color: #1e3a8a; /* Dark blue */
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  padding: 1rem;
+  text-align: left;
+}
+
+/* Table Data */
+.callers td {
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db; /* Light gray border */
+  font-size: 0.95rem;
+  color: #374151; /* Darker text for readability */
+}
+
+/* Alternate Row Color */
+.callers tbody tr:nth-child(even) {
+  background-color: #f8fafc; /* Very light gray for contrast */
+}
+
+/* Hover Effect */
+.callers tbody tr:hover {
+  background-color: #e0ecff; /* Subtle blue hover effect */
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Responsive Table */
+@media (max-width: 1024px) {
+  .callers {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .callers table {
+    min-width: 100%;
+  }
+}
+
+/* Mobile-Friendly Table */
+@media (max-width: 768px) {
+  .callers table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 0;
+  }
+
+  .callers th,
+  .callers td {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,136 @@
+.leads {
+  padding: 20px;
+  background-color: #f9fafb;
+  font-family: Arial, sans-serif;
+  overflow-x: auto; /* Enables horizontal scrolling */
+}
+
+.leads-heading {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: white; /* Ensures no color difference when scrolling */
+}
+
+.leads-table {
+  width: 100%;
+  min-width: 1000px; /* Ensures the table doesn't shrink too much */
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leads th,
+.leads td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.leads th {
+  background-color: #2980b9;
+  color: white;
+  position: sticky;
+  top: 0; /* Keeps header fixed while scrolling */
+  z-index: 10;
+}
+
+.leads tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Follow Up Date Input */
+.follow-up-date {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Comments Box */
+.comments-box {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  resize: vertical;
+  font-size: 14px;
+}
+
+/* Save Button */
+.save-btn {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  background-color: #4CAF50; /* Green button */
+  color: white;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.save-btn:hover {
+  background-color: #45a049;
+}
+
+/* Table Alignment Fix */
+.leads-table td {
+  vertical-align: middle; /* Aligns content properly */
+}
+
+/* Adjust placement */
+.leads-table .comments-box,
+.leads-table .follow-up-date,
+.leads-table .save-btn {
+  margin: auto;
+  display: block;
+}
+
+/* Fix the navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: white; /* Prevents color change */
+  z-index: 100;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  margin-top: 60px; /* Ensures content doesn't overlap with navbar */
+}
+
+/* Ensure the table is scrollable on smaller screens */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: scroll;
+  }
+
+  .leads-table {
+    width: auto;
+  }
+
+  .follow-up-date,
+  .comments-box {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .save-btn {
+    font-size: 12px;
+    padding: 5px;
+  }
+}

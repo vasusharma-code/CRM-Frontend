@@ -6,16 +6,17 @@ import { useAuth } from "../context/AuthContext";
 
 const AdminLogin = ({ onAuth }) => {
   const navigate = useNavigate();
-  const {credentials, setCredentials} = useAuth()
+  const { credentials, setCredentials } = useAuth();
   const [error, setError] = useState("");
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await onAuth(credentials.email, credentials.password, true, navigate);
+    const success = await onAuth(credentials.email, credentials.password, "", "admin");
     if (success) {
       toast.success("Admin login successful!");
+      navigate("/admin");
     } else {
       setError("Invalid admin credentials");
     }

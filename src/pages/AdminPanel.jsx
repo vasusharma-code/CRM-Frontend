@@ -12,6 +12,8 @@ const AdminPanel = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [neededLeads, setNeededLeads] = useState({});
+  const [batches, setBatches] = useState([]);
+  const [newBatch, setNewBatch] = useState({ name: "", price: "", booksPrice: "" });
 
   const fetchData = async () => {
     try {
@@ -33,9 +35,28 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchBatches = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/admin/batches", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      if (!response.ok) throw new Error("Failed to fetch batches");
+      const data = await response.json();
+      setBatches(data);
+    } catch (error) {
+      toast.error("Failed to fetch batches");
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "batches") {
+      fetchBatches();
+    }
+  }, [activeTab]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -135,6 +156,78 @@ const AdminPanel = () => {
                 .reduce((sum, lead) => sum + parseFloat(lead.amount || 0), 0);
   };
 
+  const downloadLeads = async (employeeId) => {
+    try {
+        const response = await fetch(`http://localhost:3000/api/admin/download-leads/${employeeId}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `employee_${employeeId}_leads.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } else {
+            toast.error("Failed to download leads");
+        }
+    } catch (error) {
+        toast.error("Error downloading leads");
+    }
+};
+
+  const handleNewBatchChange = (e) => {
+    setNewBatch({ ...newBatch, [e.target.name]: e.target.value });
+  };
+
+  const handleAddBatch = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch("http://localhost:3000/api/admin/addBatch", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(newBatch),
+        });
+        if (response.ok) {
+            toast.success("Batch added successfully");
+            await fetchBatches(); // Refresh the list of batches
+            setNewBatch({ name: "", price: "", booksPrice: "" }); // Reset the form
+        } else {
+            toast.error("Failed to add batch");
+        }
+    } catch (error) {
+        toast.error("Failed to add batch");
+    }
+};
+
+const handleDeleteCaller = async (callerId) => {
+    try {
+        const response = await fetch(`http://localhost:3000/api/admin/employee/${callerId}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+        if (response.ok) {
+            toast.success("Caller deleted successfully");
+            fetchData(); // Refresh the data
+        } else {
+            toast.error("Failed to delete caller");
+        }
+    } catch (error) {
+        toast.error("Error deleting caller");
+    }
+};
+
   return (
     <div className="admin-dashboard">
       <div className="admin-header">
@@ -142,7 +235,7 @@ const AdminPanel = () => {
         <div className="admin-stats">
           <div className="stat-box">
             <h3>Total Revenue</h3>
-            <p>${totalRevenue}</p>
+            <p>₹{totalRevenue}</p>
           </div>
           <div className="stat-box">
             <h3>Total Leads</h3>
@@ -185,6 +278,12 @@ const AdminPanel = () => {
           onClick={() => setActiveTab('operations')}
         >
           Operations Dashboard
+        </button>
+        <button 
+          className={`tab ${activeTab === 'batches' ? 'active' : ''}`}
+          onClick={() => setActiveTab('batches')}
+        >
+          Batch Dashboard
         </button>
         
       </div>
@@ -270,6 +369,7 @@ const AdminPanel = () => {
                     <th>Closed Deals</th>
                     <th>Revenue Generated</th>
                     <th>Needed Leads</th>
+                    <th>Conversion Rate</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -280,7 +380,7 @@ const AdminPanel = () => {
                       <td>{caller.leads.alloted}</td>
                       <td>{getRemainingLeadsCount(caller._id)}</td>
                       <td>{getClosedDealsCount(caller._id)}</td>
-                      <td>${getRevenueGenerated(caller._id)}</td>
+                      <td>₹{getRevenueGenerated(caller._id)}</td>
                       <td>
                         <input 
                           type="number" 
@@ -289,7 +389,13 @@ const AdminPanel = () => {
                         />
                       </td>
                       <td>
+                      { (getClosedDealsCount(caller._id) / (caller.leads.alloted - getRemainingLeadsCount(caller._id))) * 100}
+                      </td>
+                      <td>
+                        
                         <button className="action-btn" onClick={() => handleSaveNeededLeads(caller._id)}>Save</button>
+                        <button className="action-btn" onClick={() => downloadLeads(caller._id)}>Download Leads</button>
+                        <button className="action-btn delete-btn" onClick={() => handleDeleteCaller(caller._id)}>Delete</button>
                       </td>
                     </tr>
                   ))}
@@ -349,6 +455,103 @@ const AdminPanel = () => {
             </div>
             <div className="revenue-chart">
               {/* Add your revenue chart component here */}
+            </div>
+          </div>
+        )}
+        
+        {activeTab === 'batches' && (
+          <div className="batches-section">
+            <h2 className="section-title">Batches</h2>
+
+            {/* All Batches */}
+            <div className="table-container">
+              <h3>All Batches</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Batch Name</th>
+                    <th>Batch Price</th>
+                    <th>Books Price</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {batches.map((batch) => (
+                    <tr key={batch._id}>
+                      <td>{batch.name}</td>
+                      <td>{batch.price}</td>
+                      <td>{batch.booksPrice}</td>
+                      <td>{batch.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Active Batches */}
+            <div className="table-container">
+              <h3>Active Batches</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Batch Name</th>
+                    <th>Batch Price</th>
+                    <th>Books Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {batches.filter((batch) => batch.status === "active").map((batch) => (
+                    <tr key={batch._id}>
+                      <td>{batch.name}</td>
+                      <td>{batch.price}</td>
+                      <td>{batch.booksPrice}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Add New Batch */}
+            <div className="add-batch-form">
+              <h3>Add New Batch</h3>
+              <form onSubmit={handleAddBatch}>
+                <div className="input-group">
+                  <label htmlFor="name">Batch Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={newBatch.name}
+                    onChange={handleNewBatchChange}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label htmlFor="price">Batch Price</label>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value={newBatch.price}
+                    onChange={handleNewBatchChange}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label htmlFor="booksPrice">Books Price</label>
+                  <input
+                    type="number"
+                    id="booksPrice"
+                    name="booksPrice"
+                    value={newBatch.booksPrice}
+                    onChange={handleNewBatchChange}
+                    required
+                  />
+                </div>
+                <button type="submit" onClick={handleAddBatch} className="primary-btn">
+                  Add Batch
+                </button>
+              </form>
             </div>
           </div>
         )}

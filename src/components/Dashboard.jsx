@@ -3,92 +3,62 @@ import toast from "react-hot-toast";
 import "../styles/Dashboard.css";
 
 const Dashboard = () => {
-  const [userName, setUserName] = useState("");
-  const [followUpDates, setFollowUpDates] = useState([]);
+  const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user profile
-  const fetchUserProfile = async () => {
+  const fetchFollowUps = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/user/profile", {
+      const response = await fetch("http://localhost:3000/api/employee/follow-ups", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      if (response.ok) {
-        const data = await response.json();
-        setUserName(data.name);
-      } else {
-        toast.error("Failed to load user profile");
-      }
-    } catch (error) {
-      toast.error("Failed to load user profile");
-    }
-  };
 
-  // Fetch follow-up dates
-  const fetchFollowUpDates = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/leads", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const filteredFollowUps = data
-          .filter((lead) => lead.employeeName === userName)
-          .map((lead) => ({
-            description: lead.clientName,
-            date: lead.followUpDate,
-          }));
-        setFollowUpDates(filteredFollowUps);
-      } else {
-        toast.error("Failed to load follow-up dates");
-      }
+      if (!response.ok) throw new Error("Failed to fetch follow-ups");
+
+      const data = await response.json();
+      setFollowUps(data);
     } catch (error) {
-      toast.error("Failed to load follow-up dates");
+      toast.error("Failed to fetch follow-ups");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUserProfile();
-    fetchFollowUpDates();
+    fetchFollowUps();
   }, []);
 
-  // Function to determine greeting based on time
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 18) return "Good Afternoon";
-    return "Good Evening";
-  };
-
-  if (loading) {
-    return <div className="dashboard-loading">Loading...</div>;
-  }
+  if (loading) return <div className="loading">Loading...</div>;
 
   return (
-    <div className="dashboard-container">
-      <h2 className="greeting-section">
-        {getGreeting()}, {userName}!
-      </h2>
-
-      <div className="follow-up-section">
-        <h3 className="follow-up-title">Your Follow-Up Dates</h3>
-        {followUpDates.length > 0 ? (
-          <ul className="follow-up-list">
-            {followUpDates.map((followUp, idx) => (
-              <li key={idx} className="follow-up-item">
-                <p className="follow-up-description">
-                  Follow-up with {followUp.description}
-                </p>
-                <p className="follow-up-date">
-                  {new Date(followUp.date).toLocaleDateString()}
-                </p>
-              </li>
-            ))}
-          </ul>
+    <div className="dashboard">
+      <h1 className="dashboard-heading">Dashboard</h1>
+      <div className="follow-ups-section">
+        <h2>Today's Follow-Ups</h2>
+        {followUps.length > 0 ? (
+          <table className="follow-ups-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Contact Number</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Follow-Up Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {followUps.map((followUp) => (
+                <tr key={followUp._id}>
+                  <td>{followUp.name}</td>
+                  <td>{followUp.contactNumber}</td>
+                  <td>{followUp.email}</td>
+                  <td>{followUp.status}</td>
+                  <td>{followUp.followUpDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
-          <p className="no-follow-ups">No follow-ups scheduled</p>
+          <p>No follow-ups for today.</p>
         )}
       </div>
     </div>

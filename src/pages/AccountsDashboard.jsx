@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
- import "../styles/AccountsDashboard.css";
+import "../styles/AccountsDashboard.css";
 
 const AccountsDashboard = () => {
   const [leads, setLeads] = useState([]);
@@ -55,11 +55,13 @@ const AccountsDashboard = () => {
       <table className="leads-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Name</th>
             <th>Status</th>
-            <th>Assigned To</th>
+            <th>Batch</th>
+            <th>With Books</th>
             <th>Payment Proof</th>
+            <th>Books Proof</th>
+            <th>Form Proof</th>
             <th>Verification</th>
           </tr>
         </thead>
@@ -67,19 +69,36 @@ const AccountsDashboard = () => {
           {leads.map((lead) => (
 
             <tr key={lead._id}>
-              <td>{lead._id}</td>
               <td>{lead.name}</td>
               <td>{lead.status}</td>
-              <td>{lead.assignedTo}</td>
               <td>
                 {lead.paymentProof ? (
                   <a href={`http://localhost:3000/uploads/${lead.paymentProof}`} download={`${lead.paymentProof}.png`} target="_blank" rel="noopener noreferrer">
-                    View Proof
+                    View Payment Proof
                   </a>
                 ) : (
                   "No proof uploaded"
                 )}
               </td>
+              <td>
+                {lead.booksSs ? (
+                  <a href={`http://localhost:3000/uploads/${lead.booksSs}`} download={`${lead.booksSs}.png`} target="_blank" rel="noopener noreferrer">
+                    View Books Proof
+                  </a>
+                ) : (
+                  "No proof uploaded"
+                )}
+              </td>
+              <td>
+                {lead.formSs ? (
+                  <a href={`http://localhost:3000/uploads/${lead.formSs}`} download={`${lead.formSs}.png`} target="_blank" rel="noopener noreferrer">
+                    View Form Proof
+                  </a>
+                ) : (
+                  "No proof uploaded"
+                )}
+              </td>
+              
               <td>
                 <select
                   value={lead.paymentVerified || "unverified"}

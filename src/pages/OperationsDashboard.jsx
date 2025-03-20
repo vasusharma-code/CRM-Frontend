@@ -27,7 +27,7 @@ const OperationsDashboard = () => {
         fetchLeads();
     }, []);
 
-    const handleOperationStatusChange = async (leadId, operationStatus) => {
+    const handleOperationStatusChange = async (leadId, field, value) => {
         try {
             const response = await fetch("http://localhost:3000/api/operations/updateOperationStatus", {
                 method: "PUT",
@@ -35,16 +35,16 @@ const OperationsDashboard = () => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                body: JSON.stringify({ leadId, operationStatus }),
+                body: JSON.stringify({ leadId, field, value }),
             });
             if (response.ok) {
-                toast.success("Operation status updated successfully");
+                toast.success(`${field} updated successfully`);
                 fetchLeads();
             } else {
-                toast.error("Failed to update operation status");
+                toast.error(`Failed to update ${field}`);
             }
         } catch (error) {
-            toast.error("Failed to update operation status");
+            toast.error(`Error updating ${field}`);
         }
     };
 
@@ -55,26 +55,6 @@ const OperationsDashboard = () => {
         });
     };
 
-    const handleSaveAmount = async (leadId) => {
-        try {
-            const response = await fetch("http://localhost:3000/api/operations/updateAmount", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ leadId, amount: amounts[leadId] }),
-            });
-            if (response.ok) {
-                toast.success("Amount updated successfully");
-                fetchLeads();
-            } else {
-                toast.error("Failed to update amount");
-            }
-        } catch (error) {
-            toast.error("Failed to update amount");
-        }
-    };
 
     if (loading) return <div className="loading">Loading...</div>;
 
@@ -84,53 +64,41 @@ const OperationsDashboard = () => {
             <table className="leads-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Name</th>
-                        <th>Status</th>
-                        <th>Assigned To</th>
-                        <th>Payment Proof</th>
-                        <th>Operation Status</th>
+                        <th>Number</th>
+                        <th>Batch</th>
+                        <th>Books</th>
+                        <th>Added to Group</th>
+                        <th>Registered on App</th>
                         <th>Amount Paid</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {leads.map((lead) => (
                         <tr key={lead._id}>
-                            <td>{lead._id}</td>
                             <td>{lead.name}</td>
-                            <td>{lead.status}</td>
-                            <td>{lead.assignedTo}</td>
-                            <td>
-                                {lead.paymentProof ? (
-                                    <a href={`http://localhost:3000/uploads/${lead.paymentProof}`} target="_blank" rel="noopener noreferrer">
-                                        View Proof
-                                    </a>
-                                ) : (
-                                    "No proof uploaded"
-                                )}
-                            </td>
+                            <td>{lead.contactNumber}</td>
+                            <td>{lead.batch}</td>
+                            <td>{lead.books ? "Yes" : "No"}</td>
                             <td>
                                 <select
-                                    value={lead.operationStatus || "remaining"}
-                                    onChange={(e) => handleOperationStatusChange(lead._id, e.target.value)}
+                                    value={lead.addedToGroup || "remaining"}
+                                    onChange={(e) => handleOperationStatusChange(lead._id, "addedToGroup", e.target.value)}
                                 >
                                     <option value="remaining">Remaining</option>
                                     <option value="completed">Completed</option>
                                 </select>
                             </td>
                             <td>
-                                <input
-                                    type="number"
-                                    value={amounts[lead._id] || lead.amount || ""}
-                                    onChange={(e) => handleAmountChange(lead._id, e.target.value)}
-                                    placeholder="Enter amount"
-                                />
-
+                                <select
+                                    value={lead.registeredOnApp || "remaining"}
+                                    onChange={(e) => handleOperationStatusChange(lead._id, "registeredOnApp", e.target.value)}
+                                >
+                                    <option value="remaining">Remaining</option>
+                                    <option value="completed">Completed</option>
+                                </select>
                             </td>
-                            <td>
-                                <button onClick={() => handleSaveAmount(lead._id)}>Save</button>
-                            </td>
+                            <td>{lead.amount}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -4,6 +4,8 @@ import "../styles/AccountsDashboard.css";
 
 const AccountsDashboard = () => {
   const [leads, setLeads] = useState([]);
+  const [batchMap, setBatchMap] = useState({}); // Map to store batch details
+  const [amountMap, setAmountMap] = useState({}); // Map to store amounts
   const [loading, setLoading] = useState(true);
 
   const fetchLeads = async () => {
@@ -15,10 +17,51 @@ const AccountsDashboard = () => {
 
       const data = await response.json();
       setLeads(data);
+      fetchBatchesAndAmounts(data); // Fetch batch details and amounts for the leads
     } catch (error) {
       toast.error("Failed to fetch leads");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBatchesAndAmounts = async (leads) => {
+    try {
+      const batchIds = [...new Set(leads.map((lead) => lead.batch).filter(Boolean))]; // Unique batch IDs
+      const batchResponses = await Promise.all(
+        batchIds.map((batchId) =>
+          fetch("http://localhost:3000/api/accounts/batch", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ batchId }),
+          })
+        )
+      );
+
+      const batchData = await Promise.all(batchResponses.map((res) => res.json()));
+      const batchMap = {};
+      const amountMap = {};
+
+      batchData.forEach(({ batch, amount }) => {
+        batchMap[batch._id] = batch;
+      });
+
+      leads.forEach((lead) => {
+        if (lead.batch && batchMap[lead.batch]) {
+          const batch = batchMap[lead.batch];
+          amountMap[lead._id] = lead.books
+            ? parseInt(batch.price) + parseInt(batch.booksPrice)
+            : parseInt(batch.price);
+        }
+      });
+
+      setBatchMap(batchMap);
+      setAmountMap(amountMap);
+    } catch (error) {
+      toast.error("Failed to fetch batch details and amounts");
     }
   };
 
@@ -59,6 +102,7 @@ const AccountsDashboard = () => {
             <th>Status</th>
             <th>Batch</th>
             <th>With Books</th>
+            <th>Amount</th>
             <th>Payment Proof</th>
             <th>Books Proof</th>
             <th>Form Proof</th>
@@ -67,13 +111,20 @@ const AccountsDashboard = () => {
         </thead>
         <tbody>
           {leads.map((lead) => (
-
             <tr key={lead._id}>
               <td>{lead.name}</td>
               <td>{lead.status}</td>
+              <td>{batchMap[lead.batch]?.name || "N/A"}</td>
+              <td>{lead.books ? "Yes" : "No"}</td>
+              <td>₹{amountMap[lead._id] || "N/A"}</td>
               <td>
                 {lead.paymentProof ? (
-                  <a href={`http://localhost:3000/uploads/${lead.paymentProof}`} download={`${lead.paymentProof}.png`} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={`http://localhost:3000/uploads/${lead.paymentProof}`}
+                    download={`${lead.paymentProof}.png`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     View Payment Proof
                   </a>
                 ) : (
@@ -82,7 +133,12 @@ const AccountsDashboard = () => {
               </td>
               <td>
                 {lead.booksSs ? (
-                  <a href={`http://localhost:3000/uploads/${lead.booksSs}`} download={`${lead.booksSs}.png`} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={`http://localhost:3000/uploads/${lead.booksSs}`}
+                    download={`${lead.booksSs}.png`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     View Books Proof
                   </a>
                 ) : (
@@ -91,14 +147,18 @@ const AccountsDashboard = () => {
               </td>
               <td>
                 {lead.formSs ? (
-                  <a href={`http://localhost:3000/uploads/${lead.formSs}`} download={`${lead.formSs}.png`} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={`http://localhost:3000/uploads/${lead.formSs}`}
+                    download={`${lead.formSs}.png`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     View Form Proof
                   </a>
                 ) : (
                   "No proof uploaded"
                 )}
               </td>
-              
               <td>
                 <select
                   value={lead.paymentVerified || "unverified"}

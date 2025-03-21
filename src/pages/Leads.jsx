@@ -237,7 +237,7 @@ const Leads = () => {
                   >
                     <option value="">Select Batch</option>
                     {batches.map((batch) => (
-                      <option key={batch._id} value={batch.name}>
+                      <option key={batch._id} value={batch._id}>
                         {batch.name}
                       </option>
                     ))}

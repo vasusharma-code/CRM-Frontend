@@ -548,7 +548,7 @@ const handleDeleteCaller = async (callerId) => {
                     required
                   />
                 </div>
-                <button type="submit" onClick={handleAddBatch} className="primary-btn">
+                <button type="submit" className="primary-btn">
                   Add Batch
                 </button>
               </form>

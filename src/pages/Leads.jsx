@@ -253,16 +253,24 @@ const Leads = () => {
                 <td>
                   <input
                     type="date"
+                    className="follow-up-date"
                     value={lead.followUpDate || ""}
                     onChange={(e) => updateLeadField(lead._id, "followUpDate", e.target.value)}
                   />
                 </td>
                 <td>
-                  <textarea
-                    value={comments[lead._id] || lead.comment || ""}
-                    onChange={(e) => setComments({ ...comments, [lead._id]: e.target.value })}
-                  />
-                  <button onClick={() => handleSaveComment(lead._id)}>Save</button>
+                  <div className="comments-section">
+                    <textarea
+                      className="comments-box"
+                      value={comments[lead._id] || lead.comment || ""}
+                      onChange={(e) =>
+                        setComments({ ...comments, [lead._id]: e.target.value })
+                      }
+                    />
+                    <button className="save-btn" onClick={() => handleSaveComment(lead._id)}>
+                      Save
+                    </button>
+                  </div>
                 </td>
                 <td>
                   <select
@@ -277,29 +285,37 @@ const Leads = () => {
               </tr>
               {lead.status === "closed-success" && (
                 <tr>
-                  <td colSpan="9">
+                  <td colSpan="11">
                     <div className="proof-upload-section">
                       <h4>Upload Proofs</h4>
-                      <div className="proof-upload">
-                        <label>Payment Proof:</label>
-                        <input
-                          type="file"
-                          onChange={(e) => handleProofUpload(lead._id, "payment", e.target.files[0])}
-                        />
-                      </div>
-                      <div className="proof-upload">
-                        <label>Books Proof:</label>
-                        <input
-                          type="file"
-                          onChange={(e) => handleProofUpload(lead._id, "book", e.target.files[0])}
-                        />
-                      </div>
-                      <div className="proof-upload">
-                        <label>Form Proof:</label>
-                        <input
-                          type="file"
-                          onChange={(e) => handleProofUpload(lead._id, "form", e.target.files[0])}
-                        />
+                      <div className="proof-uploads">
+                        <div className="proof-upload">
+                          <label>Payment Proof:</label>
+                          <input
+                            type="file"
+                            onChange={(e) =>
+                              handleProofUpload(lead._id, "payment", e.target.files[0])
+                            }
+                          />
+                        </div>
+                        <div className="proof-upload">
+                          <label>Books Proof:</label>
+                          <input
+                            type="file"
+                            onChange={(e) =>
+                              handleProofUpload(lead._id, "book", e.target.files[0])
+                            }
+                          />
+                        </div>
+                        <div className="proof-upload">
+                          <label>Form Proof:</label>
+                          <input
+                            type="file"
+                            onChange={(e) =>
+                              handleProofUpload(lead._id, "form", e.target.files[0])
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
                   </td>

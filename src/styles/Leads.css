@@ -50,10 +50,15 @@
 .follow-up-date {
   width: 100%;
   padding: 8px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #cbd5e0;
   border-radius: 4px;
-  outline: none;
   font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.follow-up-date:focus {
+  border-color: #2980b9;
 }
 
 /* Comments Box */
@@ -61,25 +66,25 @@
   width: 100%;
   min-height: 40px;
   padding: 8px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #cbd5e0;
   border-radius: 4px;
   resize: vertical;
   font-size: 14px;
 }
 
-/* Save Button */
+/* Save Button (refined) */
 .save-btn {
-  display: block;
-  width: 100%;
-  padding: 6px 12px;
+  display: inline-block;
+  padding: 8px 16px;
   background-color: #4CAF50; /* Green button */
   color: white;
   font-size: 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 5px;
+  margin-top: 8px;
   text-align: center;
+  transition: background-color 0.3s ease;
 }
 
 .save-btn:hover {
@@ -134,3 +139,81 @@
     padding: 5px;
   }
 }
+
+/* Refined Proof Upload Section */
+.proof-upload-section {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.proof-upload-section h4 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #2d3748;
+  text-align: center;
+}
+
+.proof-uploads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.proof-upload {
+  flex: 1;
+  min-width: 150px;
+}
+
+.proof-upload label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.proof-upload input[type="file"] {
+  width: 100%;
+  padding: 4px;
+  font-size: 0.9rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+}
+
+.proof-upload input[type="file"] {
+  width: 100%;
+  padding: 4px;
+  font-size: 0.9rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Style the file upload button for WebKit-based browsers */
+.proof-upload input[type="file"]::-webkit-file-upload-button {
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 8px;
+}
+
+/* Style the file upload button for Firefox and other modern browsers */
+.proof-upload input[type="file"]::file-selector-button {
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 8px;
+
+}
+

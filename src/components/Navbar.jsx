@@ -50,7 +50,7 @@ const Navbar = ({ isAdmin }) => {
         </button>
       </div>
 
-      <ul className={`nav-links ${isOpen ? "open" : ""}`}>
+      <ul className={`nav-links ${isOpen ? "open" : ""}`} style={{position: "relative", right: "10vw"}}>
         <li>
           <Link to="/" className={location.pathname === "/" ? "active" : ""}>
             🏠 Dashboard
@@ -75,7 +75,7 @@ const Navbar = ({ isAdmin }) => {
         )}
       </ul>
 
-      <div className="nav-right">
+      <div className="nav-right" style={{position: "relative", right: "10vw"}}>
         <div className="nav-profile" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
           <img 
             src={`https://ui-avatars.com/api/?name=${userName}&background=1e3a8a&color=fff`}

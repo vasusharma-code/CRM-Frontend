@@ -15,6 +15,9 @@ import { AuthProvider } from "./context/AuthContext";
 import toast from "react-hot-toast";
 import "./App.css";
 
+const API_URL = "http://localhost:3000";
+window.API_URL = API_URL;
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -34,7 +37,7 @@ function App() {
   const handleAuth = async (email, password, name = "", role = "employee", type = "") => {
     try {
       const endpoint = name ? "register" : "login";
-      const response = await fetch(`http://localhost:3000/api/auth/${endpoint}`, {
+      const response = await fetch(`${window.API_URL}/api/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name, role, type }),

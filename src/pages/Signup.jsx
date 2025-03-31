@@ -85,8 +85,7 @@ const Signup = ({ onAuth }) => {
               onChange={handleChange}
               required
             >
-              <option value="employee">Employee</option>
-              <option value="admin">Admin</option>
+              <option value="employee">Employee</option>  
             </select>
           </div>
 

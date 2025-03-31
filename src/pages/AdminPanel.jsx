@@ -17,19 +17,19 @@ const AdminPanel = () => {
 
   const fetchData = async () => {
     try {
-      const callersRes = await fetch("http://localhost:3000/api/admin/callers", {
+      const revenueRes = await fetch(`${window.API_URL}/api/admin/revenue`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      const leadsRes = await fetch("http://localhost:3000/api/admin/leads", {
+      const revenueData = await revenueRes.json();
+      setTotalRevenue(revenueData.totalRevenue);
+      const callersRes = await fetch(`${window.API_URL}/api/admin/callers`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      const revenueRes = await fetch("http://localhost:3000/api/admin/revenue", {
+      const leadsRes = await fetch(`${window.API_URL}/api/admin/leads`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setCallers(await callersRes.json());
       setLeads(await leadsRes.json());
-      const revenueData = await revenueRes.json();
-      setTotalRevenue(revenueData.totalRevenue);
     } catch (error) {
       toast.error("Error fetching data");
     }
@@ -37,7 +37,7 @@ const AdminPanel = () => {
 
   const fetchBatches = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/admin/batches", {
+      const response = await fetch(`${window.API_URL}/api/admin/batches`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (!response.ok) throw new Error("Failed to fetch batches");
@@ -69,7 +69,7 @@ const AdminPanel = () => {
     formData.append("file", file);
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/admin/addLeads", {
+      const response = await fetch(`${window.API_URL}/api/admin/addLeads`, {
         method: "POST",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: formData,
@@ -96,7 +96,7 @@ const AdminPanel = () => {
 
   const handleAssignLead = async (leadId, callerId) => {
     try {
-      const response = await fetch("http://localhost:3000/api/admin/assignLead", {
+      const response = await fetch(`${window.API_URL}/api/admin/assignLead`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -124,7 +124,7 @@ const AdminPanel = () => {
 
   const handleSaveNeededLeads = async (callerId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/updateNeededLeads/${callerId}`, {
+      const response = await fetch(`${window.API_URL}/api/admin/updateNeededLeads/${callerId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -148,17 +148,22 @@ const AdminPanel = () => {
   };
 
   const getClosedDealsCount = (callerId) => {
-    return leads.filter(lead => lead.assignedTo === callerId && lead.paymentVerified === 'verified' && lead.operationStatus === 'completed').length;
+    return leads.filter(lead => lead.assignedTo === callerId && lead.paymentVerified === 'verified').length;
   };
 
   const getRevenueGenerated = (callerId) => {
-    return leads.filter(lead => lead.assignedTo === callerId && lead.paymentVerified === 'verified' && lead.operationStatus === 'completed')
-                .reduce((sum, lead) => sum + parseFloat(lead.amount || 0), 0);
-  };
+    return leads
+        .filter(lead => lead.assignedTo === callerId && lead.paymentVerified === 'verified' && lead.status === 'closed-success')
+        .reduce((sum, lead) => {
+            const batchPrice = lead.batch?.price || 0; // Access batch price
+            const booksPrice = lead.books ? lead.batch?.booksPrice || 0 : 0; // Access books price if applicable
+            return sum + batchPrice + booksPrice;
+        }, 0);
+};
 
   const downloadLeads = async (employeeId) => {
     try {
-        const response = await fetch(`http://localhost:3000/api/admin/download-leads/${employeeId}`, {
+        const response = await fetch(`${window.API_URL}/api/admin/download-leads/${employeeId}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -189,7 +194,7 @@ const AdminPanel = () => {
   const handleAddBatch = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetch("http://localhost:3000/api/admin/addBatch", {
+        const response = await fetch(`${window.API_URL}/api/admin/addBatch`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -211,7 +216,7 @@ const AdminPanel = () => {
 
 const handleDeleteCaller = async (callerId) => {
     try {
-        const response = await fetch(`http://localhost:3000/api/admin/employee/${callerId}`, {
+        const response = await fetch(`${window.API_URL}/api/admin/employee/${callerId}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -225,6 +230,27 @@ const handleDeleteCaller = async (callerId) => {
         }
     } catch (error) {
         toast.error("Error deleting caller");
+    }
+};
+
+const handleBatchStatusChange = async (batchId, newStatus) => {
+    try {
+        const response = await fetch(`${window.API_URL}/api/admin/updateBatchStatus/${batchId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ status: newStatus }),
+        });
+        if (response.ok) {
+            toast.success("Batch status updated successfully");
+            fetchBatches(); // Refresh batches
+        } else {
+            toast.error("Failed to update batch status");
+        }
+    } catch (error) {
+        toast.error("Error updating batch status");
     }
 };
 
@@ -389,7 +415,7 @@ const handleDeleteCaller = async (callerId) => {
                         />
                       </td>
                       <td>
-                      { (getClosedDealsCount(caller._id) / (caller.leads.alloted - getRemainingLeadsCount(caller._id))) * 100}
+                      { (getClosedDealsCount(caller._id) / (caller.leads.alloted - getRemainingLeadsCount(caller._id))) * 100}%
                       </td>
                       <td>
                         
@@ -481,7 +507,15 @@ const handleDeleteCaller = async (callerId) => {
                       <td>{batch.name}</td>
                       <td>{batch.price}</td>
                       <td>{batch.booksPrice}</td>
-                      <td>{batch.status}</td>
+                      <td>
+                        <select
+                            value={batch.status}
+                            onChange={(e) => handleBatchStatusChange(batch._id, e.target.value)}
+                        >
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

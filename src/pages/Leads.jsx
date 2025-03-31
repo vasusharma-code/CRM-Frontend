@@ -283,7 +283,7 @@ const Leads = () => {
                   </select>
                 </td>
               </tr>
-              {lead.status === "closed-success" && (
+              {lead.status === "closed-success" &&  lead.paymentVerified === "unverified"  &&(
                 <tr>
                   <td colSpan="11">
                     <div className="proof-upload-section">

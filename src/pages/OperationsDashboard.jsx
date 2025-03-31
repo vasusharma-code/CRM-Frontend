@@ -4,22 +4,64 @@ import toast from "react-hot-toast";
 
 const OperationsDashboard = () => {
     const [leads, setLeads] = useState([]);
+    const [batchMap, setBatchMap] = useState({}); // Map to store batch details
+    const [amountMap, setAmountMap] = useState({}); // Map to store amounts
     const [loading, setLoading] = useState(true);
-    const [amounts, setAmounts] = useState({});
 
     const fetchLeads = async () => {
         try {
-            const response = await fetch("http://localhost:3000/api/operations/closed-success-leads", {
+            const response = await fetch("http://localhost:3000/api/employee/closed-success-leads", {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (!response.ok) throw new Error("Failed to fetch leads");
 
             const data = await response.json();
             setLeads(data);
+            fetchBatchesAndAmounts(data); // Fetch batch details and amounts for the leads
         } catch (error) {
             toast.error("Failed to fetch leads");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchBatchesAndAmounts = async (leads) => {
+        try {
+            const batchIds = [...new Set(leads.map((lead) => lead.batch).filter(Boolean))]; // Unique batch IDs
+            const batchResponses = await Promise.all(
+                batchIds.map((batchId) =>
+                    fetch("http://localhost:3000/api/accounts/batch", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                        body: JSON.stringify({ batchId }),
+                    })
+                )
+            );
+
+            const batchData = await Promise.all(batchResponses.map((res) => res.json()));
+            const batchMap = {};
+            const amountMap = {};
+
+            batchData.forEach(({ batch, amount }) => {
+                batchMap[batch._id] = batch;
+            });
+
+            leads.forEach((lead) => {
+                if (lead.batch && batchMap[lead.batch]) {
+                    const batch = batchMap[lead.batch];
+                    amountMap[lead._id] = lead.books
+                        ? parseInt(batch.price) + parseInt(batch.booksPrice)
+                        : parseInt(batch.price);
+                }
+            });
+
+            setBatchMap(batchMap);
+            setAmountMap(amountMap);
+        } catch (error) {
+            toast.error("Failed to fetch batch details and amounts");
         }
     };
 
@@ -48,14 +90,6 @@ const OperationsDashboard = () => {
         }
     };
 
-    const handleAmountChange = (leadId, amount) => {
-        setAmounts({
-            ...amounts,
-            [leadId]: amount
-        });
-    };
-
-
     if (loading) return <div className="loading">Loading...</div>;
 
     return (
@@ -78,7 +112,7 @@ const OperationsDashboard = () => {
                         <tr key={lead._id}>
                             <td>{lead.name}</td>
                             <td>{lead.contactNumber}</td>
-                            <td>{lead.batch}</td>
+                            <td>{batchMap[lead.batch]?.name || "N/A"}</td>
                             <td>{lead.books ? "Yes" : "No"}</td>
                             <td>
                                 <select
@@ -98,7 +132,7 @@ const OperationsDashboard = () => {
                                     <option value="completed">Completed</option>
                                 </select>
                             </td>
-                            <td>{lead.amount}</td>
+                            <td>₹{amountMap[lead._id] || "N/A"}</td>
                         </tr>
                     ))}
                 </tbody>

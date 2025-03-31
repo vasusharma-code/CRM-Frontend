@@ -8,8 +8,8 @@ import AdminPanel from "./pages/AdminPanel";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
-import AccountsDashboard from "./pages/AccountsDashboard"; // Import AccountsDashboard
-import OperationsDashboard from "./pages/OperationsDashboard"; // Import OperationsDashboard
+import AccountsDashboard from "./pages/AccountsDashboard"; // Accounts dashboard
+import OperationsDashboard from "./pages/OperationsDashboard"; // Operations dashboard
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
 import toast from "react-hot-toast";
@@ -23,7 +23,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("userRole");
-    const empType = localStorage.getItem("employeeType");
+    const empType = localStorage.getItem("employeeType");  
     if (token && userRole) {
       setIsAuthenticated(true);
       setIsAdmin(userRole === "admin");
@@ -74,22 +74,44 @@ function App() {
               <Navbar isAdmin={isAdmin} />
               <main className="content-area">
                 <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/leads" element={employeeType === "accounts" ? <AccountsDashboard /> : employeeType === "operations" ? <OperationsDashboard /> : <Leads />} />
+                  {/* Home Route: show AccountsDashboard if employeeType is accounts, OperationsDashboard if operations, else default Dashboard */}
+                  <Route
+                    path="/"
+                    element={
+                      employeeType === "accounts" ? (
+                        <AccountsDashboard />
+                      ) : employeeType === "operations" ? (
+                        <OperationsDashboard />
+                      ) : (
+                        <Dashboard />
+                      )
+                    }
+                  />
+                  {/* Leads Route: if sales -> Leads; if accounts or operations, show corresponding dashboard */}
+                  <Route
+                    path="/leads"
+                    element={
+                      employeeType === "sales" ? (
+                        <Leads />
+                      ) : employeeType === "accounts" ? (
+                        <AccountsDashboard />
+                      ) : employeeType === "operations" ? (
+                        <OperationsDashboard />
+                      ) : (
+                        <Dashboard />
+                      )
+                    }
+                  />
                   <Route path="/callers" element={<Callers />} />
                   <Route path="/sales" element={<Sales />} />
-                  <Route 
-                    path="/admin" 
+                  <Route
+                    path="/admin"
                     element={
-                      isAdmin ? (
-                        <AdminPanel />
-                      ) : (
-                        <Navigate to="/admin-login" replace />
-                      )
-                    } 
+                      isAdmin ? <AdminPanel /> : <Navigate to="/admin-login" replace />
+                    }
                   />
-                  <Route path="/accounts" element={<AccountsDashboard />} /> {/* Add accounts dashboard route */}
-                  <Route path="/operations" element={<OperationsDashboard />} /> {/* Add operations dashboard route */}
+                  <Route path="/accounts" element={<AccountsDashboard />} /> 
+                  <Route path="/operations" element={<OperationsDashboard />} /> 
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>
@@ -99,10 +121,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login onAuth={handleAuth} />} />
             <Route path="/signup" element={<Signup onAuth={handleAuth} />} />
-            <Route 
-              path="/admin-login" 
-              element={<AdminLogin onAuth={handleAuth} />} 
-            />
+            <Route path="/admin-login" element={<AdminLogin onAuth={handleAuth} />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         )}

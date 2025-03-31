@@ -11,8 +11,12 @@ const Navbar = ({ isAdmin }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [userName, setUserName] = useState("");
+  const [employeeType, setEmployeeType] = useState("sales");
 
   useEffect(() => {
+    const type = localStorage.getItem("employeeType") || "sales";
+    setEmployeeType(type);
+
     const fetchUserProfile = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/user/profile", {
@@ -40,42 +44,61 @@ const Navbar = ({ isAdmin }) => {
     <nav className="navbar">
       <div className="navbar-brand">
         <h2 className="logo">CRM Dashboard</h2>
-        <button 
-          className="mobile-menu-btn" 
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <button className="mobile-menu-btn" onClick={() => setIsOpen(!isOpen)}>
           <span className="bar"></span>
           <span className="bar"></span>
           <span className="bar"></span>
         </button>
       </div>
 
-      <ul className={`nav-links ${isOpen ? "open" : ""}`} style={{position: "relative", right: "10vw"}}>
+      <ul className={`nav-links ${isOpen ? "open" : ""}`} style={{ position: "relative", right: "10vw" }}>
         <li>
           <Link to="/" className={location.pathname === "/" ? "active" : ""}>
             🏠 Dashboard
           </Link>
         </li>
-        <li>
-          <Link to="/leads" className={location.pathname === "/leads" ? "active" : ""}>
-            📋 Leads
-          </Link>
-        </li>
-        <li>
-          <Link to="/sales" className={location.pathname === "/sales" ? "active" : ""}>
-            💰 Sales
-          </Link>
-        </li>
+
+        {employeeType === "sales" && (
+          <>
+            <li>
+              <Link to="/leads" className={location.pathname === "/leads" ? "active" : ""}>
+                📋 Leads
+              </Link>
+            </li>
+            <li>
+              <Link to="/sales" className={location.pathname === "/sales" ? "active" : ""}>
+                💰 Sales
+              </Link>
+            </li>
+          </>
+        )}
+
+        {employeeType === "accounts" && (
+          <li>
+            <Link to="/accounts" className={location.pathname === "/accounts" ? "active" : ""}>
+              📊 Accounts
+            </Link>
+          </li>
+        )}
+
+        {employeeType === "operations" && (
+          <li>
+            <Link to="/operations" className={location.pathname === "/operations" ? "active" : ""}>
+              ⚙️ Operations
+            </Link>
+          </li>
+        )}
+
         {isAdmin && (
           <li>
             <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
-              ⚙️ Admin
+              🛠️ Admin
             </Link>
           </li>
         )}
       </ul>
 
-      <div className="nav-right" style={{position: "relative", right: "10vw"}}>
+      <div className="nav-right" style={{ position: "relative", right: "10vw" }}>
         <div className="nav-profile" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
           <img 
             src={`https://ui-avatars.com/api/?name=${userName}&background=1e3a8a&color=fff`}
@@ -84,14 +107,16 @@ const Navbar = ({ isAdmin }) => {
           />
         </div>
 
-        <div className={`profile-dropdown ${showProfileDropdown ? "open" : ""}`}>
-          <p>{localStorage.getItem("name")}</p>
-          <p>{localStorage.getItem("email")}</p>
-          <p>{localStorage.getItem("userRole")}</p>
-          <button className="dropdown-logout" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
+        {showProfileDropdown && (
+          <div className="profile-dropdown open">
+            <p>{localStorage.getItem("name")}</p>
+            <p>{localStorage.getItem("email")}</p>
+            <p>{employeeType}</p>
+            <button className="dropdown-logout" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );

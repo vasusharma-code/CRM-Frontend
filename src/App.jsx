@@ -46,13 +46,16 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         // Use the employeeType from data if available, else fallback to the provided type
-        const employeeTypeReturned = data.employeeType || type;
+        if (data.role === "employee"){
+          const employeeTypeReturned = data.user.type ;
+          localStorage.setItem("employeeType", employeeTypeReturned);
 
+        }
+        
         localStorage.setItem("token", data.authToken);
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("name", data.name || name);
         localStorage.setItem("email", email);
-        localStorage.setItem("employeeType", employeeTypeReturned);
         setIsAuthenticated(true);
         setIsAdmin(data.role === "admin");
         setEmployeeType(employeeTypeReturned);

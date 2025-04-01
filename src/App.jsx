@@ -45,14 +45,17 @@ function App() {
 
       if (response.ok) {
         const data = await response.json();
+        // Use the employeeType from data if available, else fallback to the provided type
+        const employeeTypeReturned = data.employeeType || type;
+
         localStorage.setItem("token", data.authToken);
         localStorage.setItem("userRole", data.role);
-        localStorage.setItem("name", name);
+        localStorage.setItem("name", data.name || name);
         localStorage.setItem("email", email);
-        localStorage.setItem("employeeType", type);
+        localStorage.setItem("employeeType", employeeTypeReturned);
         setIsAuthenticated(true);
         setIsAdmin(data.role === "admin");
-        setEmployeeType(type);
+        setEmployeeType(employeeTypeReturned);
         toast.success("Logged in successfully.");
         // Force full page reload on redirection:
         window.location.href = data.role === "admin" ? "/admin" : "/";

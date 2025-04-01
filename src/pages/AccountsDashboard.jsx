@@ -10,7 +10,7 @@ const AccountsDashboard = () => {
 
   const fetchLeads = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/accounts/under-review-leads", {
+      const response = await fetch(`${window.API_URL}/api/accounts/under-review-leads`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (!response.ok) throw new Error("Failed to fetch leads");
@@ -30,7 +30,7 @@ const AccountsDashboard = () => {
       const batchIds = [...new Set(leads.map((lead) => lead.batch).filter(Boolean))]; // Unique batch IDs
       const batchResponses = await Promise.all(
         batchIds.map((batchId) =>
-          fetch("http://localhost:3000/api/accounts/batch", {
+          fetch(`${window.API_URL}/api/accounts/batch`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const AccountsDashboard = () => {
 
   const handleVerificationChange = async (leadId, verificationStatus) => {
     try {
-      const response = await fetch("http://localhost:3000/api/accounts/updateVerificationStatus", {
+      const response = await fetch(`${window.API_URL}/api/accounts/updateVerificationStatus`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

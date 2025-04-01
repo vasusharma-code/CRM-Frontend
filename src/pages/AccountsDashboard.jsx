@@ -120,7 +120,7 @@ const AccountsDashboard = () => {
               <td>
                 {lead.paymentProof ? (
                   <a
-                    href={`http://localhost:3000/uploads/${lead.paymentProof}`}
+                    href={`${window.API_URL}/uploads/${lead.paymentProof}`} // updated endpoint
                     download={`${lead.paymentProof}.png`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -134,7 +134,7 @@ const AccountsDashboard = () => {
               <td>
                 {lead.booksSs ? (
                   <a
-                    href={`http://localhost:3000/uploads/${lead.booksSs}`}
+                    href={`${window.API_URL}/uploads/${lead.booksSs}`} // updated endpoint
                     download={`${lead.booksSs}.png`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -148,7 +148,7 @@ const AccountsDashboard = () => {
               <td>
                 {lead.formSs ? (
                   <a
-                    href={`http://localhost:3000/uploads/${lead.formSs}`}
+                    href={`${window.API_URL}/uploads/${lead.formSs}`} // updated endpoint
                     download={`${lead.formSs}.png`}
                     target="_blank"
                     rel="noopener noreferrer"

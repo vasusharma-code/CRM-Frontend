@@ -8,13 +8,14 @@ import AdminPanel from "./pages/AdminPanel";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
-import AccountsDashboard from "./pages/AccountsDashboard"; // Accounts dashboard
-import OperationsDashboard from "./pages/OperationsDashboard"; // Operations dashboard
+import AccountsDashboard from "./pages/AccountsDashboard";
+import OperationsDashboard from "./pages/OperationsDashboard";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
 import toast from "react-hot-toast";
 import "./App.css";
 
+// Set API base URL globally
 const API_URL = "http://localhost:3000";
 window.API_URL = API_URL;
 
@@ -22,18 +23,24 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [employeeType, setEmployeeType] = useState("");
+  const [isLoading, setIsLoading] = useState(true); // Added loading state
 
+  // Load user data from localStorage on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("userRole");
-    const empType = localStorage.getItem("employeeType");  
+    const empType = localStorage.getItem("employeeType");
+
     if (token && userRole) {
       setIsAuthenticated(true);
       setIsAdmin(userRole === "admin");
-      setEmployeeType(empType);
+      setEmployeeType(empType || "");
     }
+
+    setIsLoading(false); // Done loading
   }, []);
 
+  // Handle Login/Signup
   const handleAuth = async (email, password, name = "", role = "employee", type = "") => {
     try {
       const endpoint = name ? "register" : "login";
@@ -45,19 +52,31 @@ function App() {
 
       if (response.ok) {
         const data = await response.json();
-        // Use the employeeType from data if available, else fallback to the provided type
-        const employeeTypeReturned = data.employeeType || type;
+        // If employeeType not returned from login, fetch it using the profile endpoint
+        let employeeTypeReturned = data.employeeType || type;
+        if (!employeeTypeReturned && !name) {
+          const profileRes = await fetch(`${window.API_URL}/api/user/profile`, {
+            headers: { Authorization: `Bearer ${data.authToken}` },
+          });
+          if (profileRes.ok) {
+            const profileData = await profileRes.json();
+            employeeTypeReturned = profileData.employeeType || type;
+          }
+        }
 
         localStorage.setItem("token", data.authToken);
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("name", data.name || name);
         localStorage.setItem("email", email);
         localStorage.setItem("employeeType", employeeTypeReturned);
+
         setIsAuthenticated(true);
         setIsAdmin(data.role === "admin");
         setEmployeeType(employeeTypeReturned);
+
         toast.success("Logged in successfully.");
-        // Force full page reload on redirection:
+
+        // Full page reload to re-trigger routing
         window.location.href = data.role === "admin" ? "/admin" : "/";
         return true;
       } else {
@@ -71,6 +90,9 @@ function App() {
     }
   };
 
+  // While loading auth info
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <Router>
       <AuthProvider>
@@ -80,7 +102,7 @@ function App() {
               <Navbar isAdmin={isAdmin} />
               <main className="content-area">
                 <Routes>
-                  {/* Home Route: show AccountsDashboard if employeeType is accounts, OperationsDashboard if operations, else default Dashboard */}
+                  {/* Home Route */}
                   <Route
                     path="/"
                     element={
@@ -93,21 +115,11 @@ function App() {
                       )
                     }
                   />
-                  {/* Leads Route: if sales -> Leads; if accounts or operations, show corresponding dashboard */}
-                  <Route
-                    path="/leads"
-                    element={
-                      employeeType === "sales" ? (
-                        <Leads />
-                      ) : employeeType === "accounts" ? (
-                        <AccountsDashboard />
-                      ) : employeeType === "operations" ? (
-                        <OperationsDashboard />
-                      ) : (
-                        <Dashboard />
-                      )
-                    }
-                  />
+
+                  {/* Leads Route - now always shows <Leads /> */}
+                  <Route path="/leads" element={<Leads />} />
+
+                  {/* Other Routes */}
                   <Route path="/callers" element={<Callers />} />
                   <Route path="/sales" element={<Sales />} />
                   <Route
@@ -116,8 +128,10 @@ function App() {
                       isAdmin ? <AdminPanel /> : <Navigate to="/admin-login" replace />
                     }
                   />
-                  <Route path="/accounts" element={<AccountsDashboard />} /> 
-                  <Route path="/operations" element={<OperationsDashboard />} /> 
+                  <Route path="/accounts" element={<AccountsDashboard />} />
+                  <Route path="/operations" element={<OperationsDashboard />} />
+
+                  {/* Fallback */}
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

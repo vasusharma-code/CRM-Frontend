@@ -10,7 +10,7 @@ const OperationsDashboard = () => {
 
     const fetchLeads = async () => {
         try {
-            const response = await fetch("http://localhost:3000/api/employee/closed-success-leads", {
+            const response = await fetch(`${window.API_URL}/api/employee/closed-success-leads`, { // updated endpoint
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (!response.ok) throw new Error("Failed to fetch leads");
@@ -30,7 +30,7 @@ const OperationsDashboard = () => {
             const batchIds = [...new Set(leads.map((lead) => lead.batch).filter(Boolean))]; // Unique batch IDs
             const batchResponses = await Promise.all(
                 batchIds.map((batchId) =>
-                    fetch("http://localhost:3000/api/accounts/batch", {
+                    fetch(`${window.API_URL}/api/accounts/batch`, { // updated endpoint
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const OperationsDashboard = () => {
 
     const handleOperationStatusChange = async (leadId, field, value) => {
         try {
-            const response = await fetch("http://localhost:3000/api/operations/updateOperationStatus", {
+            const response = await fetch(`${window.API_URL}/api/operations/updateOperationStatus`, { // updated endpoint
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

@@ -52,24 +52,14 @@ function App() {
 
       if (response.ok) {
         const data = await response.json();
-        // If employeeType not returned from login, fetch it using the profile endpoint
-        let employeeTypeReturned = data.employeeType || type;
-        if (!employeeTypeReturned && !name) {
-          const profileRes = await fetch(`${window.API_URL}/api/user/profile`, {
-            headers: { Authorization: `Bearer ${data.authToken}` },
-          });
-          if (profileRes.ok) {
-            const profileData = await profileRes.json();
-            employeeTypeReturned = profileData.employeeType || type;
-          }
-        }
+        // Use the employeeType from data if available, else fallback to the provided type
+        const employeeTypeReturned = data.employeeType || type;
 
         localStorage.setItem("token", data.authToken);
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("name", data.name || name);
         localStorage.setItem("email", email);
         localStorage.setItem("employeeType", employeeTypeReturned);
-
         setIsAuthenticated(true);
         setIsAdmin(data.role === "admin");
         setEmployeeType(employeeTypeReturned);

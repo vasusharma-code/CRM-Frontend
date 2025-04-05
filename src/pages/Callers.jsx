@@ -19,7 +19,7 @@ const Navbar = ({ isAdmin }) => {
 
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/user/profile", {
+        const response = await fetch(`${window.API_URL}/api/user/profile`, { // updated endpoint
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         if (response.ok) {

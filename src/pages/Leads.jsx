@@ -11,7 +11,7 @@ const Leads = () => {
   const fetchData = async () => {
     try {
       const role = localStorage.getItem("userRole");
-      const leadsRes = await fetch(`http://localhost:3000/api/${role}/leads`, {
+      const leadsRes = await fetch(`${window.API_URL}/api/${role}/leads`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
@@ -28,7 +28,7 @@ const Leads = () => {
 
   const fetchBatches = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/admin/batches", {
+      const response = await fetch(`${window.API_URL}/api/admin/batches`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
@@ -48,7 +48,7 @@ const Leads = () => {
 
   const updateStatus = async (leadId, newStatus) => {
     try {
-      const response = await fetch("http://localhost:3000/api/employee/updateLeadStatus", {
+      const response = await fetch(`${window.API_URL}/api/employee/updateLeadStatus`, { // updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const Leads = () => {
 
   const updateLeadField = async (leadId, field, value) => {
     try {
-      const response = await fetch("http://localhost:3000/api/employee/updateLeadField", {
+      const response = await fetch(`${window.API_URL}/api/employee/updateLeadField`, { // updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,15 +103,14 @@ const Leads = () => {
 
   const handleSaveComment = async (leadId) => {
     try {
-      const response = await fetch("http://localhost:3000/api/employee/updateLeadField", {
+      const response = await fetch(`${window.API_URL}/api/employee/updateLeadField`, { // updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body: JSON.stringify({ leadId, field: "comment", value: comments[leadId] }),
       });
-
       if (response.ok) {
         toast.success("Comment saved successfully");
         fetchData();
@@ -134,7 +133,7 @@ const Leads = () => {
     formData.append("proofType", proofType);
 
     try {
-        const response = await fetch("http://localhost:3000/api/employee/uploadPaymentProof", {
+        const response = await fetch(`${window.API_URL}/api/employee/uploadPaymentProof`, { // updated endpoint
             method: "POST",
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             body: formData,

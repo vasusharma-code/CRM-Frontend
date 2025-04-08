@@ -160,6 +160,7 @@ const Leads = () => {
           <tr>
             <th>Name</th>
             <th>Number</th>
+            <th>Source</th>
             <th>Call Status</th>
             <th>12th Boards Year</th>
             <th>12th PCM</th>
@@ -177,6 +178,7 @@ const Leads = () => {
               <tr>
                 <td>{lead.name}</td>
                 <td>{lead.contactNumber}</td>
+                <td>{lead.source}</td>
                 <td>
                   <select
                     value={lead.status || ""}

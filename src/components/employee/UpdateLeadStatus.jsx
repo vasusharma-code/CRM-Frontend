@@ -10,7 +10,7 @@ const UpdateLeadStatus = () => {
 
   const fetchLeads = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/employee/leads", {
+      const response = await fetch(`${window.API_URL}/api/employee/leads`, { // updated endpoint from port 5000
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setLeads(await response.json());
@@ -27,7 +27,7 @@ const UpdateLeadStatus = () => {
 
   const handleStatusChange = async (leadId, newStatus) => {
     try {
-      const response = await fetch("http://localhost:5000/api/employee/updateLeadStatus", {
+      const response = await fetch(`${window.API_URL}/api/employee/updateLeadStatus`, { // updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -19,8 +19,11 @@ const Navbar = ({ isAdmin }) => {
 
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`${window.API_URL}/api/user/profile`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        const response = await fetch(`${window.API_URL}/api/gen/user/profile`, { // corrected endpoint
+          method: "GET", // Use GET method
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
         if (response.ok) {
           const data = await response.json();

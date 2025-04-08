@@ -10,10 +10,10 @@ const AllotLeads = () => {
 
   const fetchData = async () => {
     try {
-      const empRes = await fetch("http://localhost:3000/api/admin/employees", {
+      const empRes = await fetch(`${window.API_URL}/api/admin/employees`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      const leadsRes = await fetch("http://localhost:3000/api/admin/unassigned-leads", {
+      const leadsRes = await fetch(`${window.API_URL}/api/admin/unassigned-leads`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setEmployees(await empRes.json());
@@ -34,7 +34,7 @@ const AllotLeads = () => {
     }
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/admin/allotLeads", {
+      const response = await fetch(`${window.API_URL}/api/admin/allotLeads`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

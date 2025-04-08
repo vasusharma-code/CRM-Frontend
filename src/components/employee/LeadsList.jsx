@@ -6,7 +6,7 @@ const LeadsList = () => {
   
   const fetchLeads = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/employee/leads", {
+      const response = await fetch(`${window.API_URL}/api/employee/leads`, { // updated endpoint from localhost:5000
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setLeads(await response.json());

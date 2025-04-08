@@ -40,7 +40,7 @@ const AdminLogin = ({ onAuth }) => {
     formData.append("file", file);
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/admin/addLeads", {
+      const response = await fetch(`${window.API_URL}/api/admin/addLeads`, { // updated endpoint
         method: "POST",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: formData,

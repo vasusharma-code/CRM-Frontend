@@ -8,7 +8,7 @@ const Dashboard = () => {
 
   const fetchFollowUps = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/employee/follow-ups", {
+      const response = await fetch(`${window.API_URL}/api/employee/follow-ups`, { // updated endpoint
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 

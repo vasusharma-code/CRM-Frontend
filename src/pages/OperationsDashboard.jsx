@@ -10,7 +10,7 @@ const OperationsDashboard = () => {
 
     const fetchLeads = async () => {
         try {
-            const response = await fetch(`${window.API_URL}/api/employee/closed-success-leads`, { // updated endpoint
+            const response = await fetch(`${window.API_URL}/api/operations/closed-success-leads`, { // updated endpoint
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             if (!response.ok) throw new Error("Failed to fetch leads");

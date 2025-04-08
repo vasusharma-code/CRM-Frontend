@@ -11,7 +11,12 @@ const ViewProof = () => {
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100">
-            <img src={imageUrl} alt="Proof" className="max-w-full max-h-full" />
+            <img 
+                src={imageUrl} 
+                alt="Proof" 
+                className="object-contain" 
+                style={{ width: "600px", height: "800px" }} // Fixed dimensions for better visibility
+            />
         </div>
     );
 };

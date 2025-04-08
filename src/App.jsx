@@ -14,6 +14,7 @@ import Navbar from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
 import toast from "react-hot-toast";
 import "./App.css";
+import ViewProof from "./pages/ViewProof"; // Ensure ViewProof is imported
 
 // Set API base URL globally
 const API_URL = "http://localhost:3000";
@@ -120,6 +121,7 @@ function App() {
                   />
                   <Route path="/accounts" element={<AccountsDashboard />} />
                   <Route path="/operations" element={<OperationsDashboard />} />
+                  <Route path="/view-proof" element={<ViewProof />} /> {/* Ensure this route is defined */}
 
                   {/* Fallback */}
                   <Route path="*" element={<Navigate to="/" replace />} />

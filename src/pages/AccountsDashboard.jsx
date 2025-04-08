@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom"; // Ensure navigate is imported
 import "../styles/AccountsDashboard.css";
 
 const AccountsDashboard = () => {
+  const navigate = useNavigate(); // Initialize navigate
   const [leads, setLeads] = useState([]);
   const [batchMap, setBatchMap] = useState({}); // Map to store batch details
   const [amountMap, setAmountMap] = useState({}); // Map to store amounts
@@ -119,42 +121,42 @@ const AccountsDashboard = () => {
               <td>₹{amountMap[lead._id] || "N/A"}</td>
               <td>
                 {lead.paymentProof ? (
-                  <a
-                    href={`${window.API_URL}/uploads/${lead.paymentProof}`} // updated endpoint
-                    download={`${lead.paymentProof}.png`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() =>
+                      navigate("/view-proof", { state: { imageUrl: `${window.API_URL}/uploads/${lead.paymentProof}` } })
+                    }
+                    className="text-blue-500 underline"
                   >
                     View Payment Proof
-                  </a>
+                  </button>
                 ) : (
                   "No proof uploaded"
                 )}
               </td>
               <td>
                 {lead.booksSs ? (
-                  <a
-                    href={`${window.API_URL}/uploads/${lead.booksSs}`} // updated endpoint
-                    download={`${lead.booksSs}.png`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() =>
+                      navigate("/view-proof", { state: { imageUrl: `${window.API_URL}/uploads/${lead.booksSs}` } })
+                    }
+                    className="text-blue-500 underline"
                   >
                     View Books Proof
-                  </a>
+                  </button>
                 ) : (
                   "No proof uploaded"
                 )}
               </td>
               <td>
                 {lead.formSs ? (
-                  <a
-                    href={`${window.API_URL}/uploads/${lead.formSs}`} // updated endpoint
-                    download={`${lead.formSs}.png`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() =>
+                      navigate("/view-proof", { state: { imageUrl: `${window.API_URL}/uploads/${lead.formSs}` } })
+                    }
+                    className="text-blue-500 underline"
                   >
                     View Form Proof
-                  </a>
+                  </button>
                 ) : (
                   "No proof uploaded"
                 )}

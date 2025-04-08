@@ -284,7 +284,7 @@ const Leads = () => {
                   </select>
                 </td>
               </tr>
-              {lead.status === "closed-success" &&  lead.paymentVerified === "unverified"  &&(
+              {lead.status === "closed-success" && lead.paymentVerified === "unverified" && (
                 <tr>
                   <td colSpan="11">
                     <div className="proof-upload-section">
@@ -299,15 +299,17 @@ const Leads = () => {
                             }
                           />
                         </div>
-                        <div className="proof-upload">
-                          <label>Books Proof:</label>
-                          <input
-                            type="file"
-                            onChange={(e) =>
-                              handleProofUpload(lead._id, "book", e.target.files[0])
-                            }
-                          />
-                        </div>
+                        {lead.books && (
+                          <div className="proof-upload">
+                            <label>Books Proof:</label>
+                            <input
+                              type="file"
+                              onChange={(e) =>
+                                handleProofUpload(lead._id, "book", e.target.files[0])
+                              }
+                            />
+                          </div>
+                        )}
                         <div className="proof-upload">
                           <label>Form Proof:</label>
                           <input

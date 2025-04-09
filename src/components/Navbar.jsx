@@ -11,16 +11,15 @@ const Navbar = ({ isAdmin }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [userName, setUserName] = useState("");
-  const [employeeType, setEmployeeType] = useState("sales");
+  const [employeeType, setEmployeeType] = useState("");
 
   useEffect(() => {
-    const type = localStorage.getItem("employeeType") || "sales";
-    setEmployeeType(type);
+    const type = localStorage.getItem("employeeType");
+    setEmployeeType(type || "");
 
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`${window.API_URL}/api/gen/user/profile`, { // corrected endpoint
-          method: "GET", // Use GET method
+        const response = await fetch(`${window.API_URL}/api/gen/user/profile`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -28,8 +27,10 @@ const Navbar = ({ isAdmin }) => {
         if (response.ok) {
           const data = await response.json();
           setUserName(data.name);
-        } else {
-          toast.error("Failed to fetch user profile");
+          if (data.type) {
+            setEmployeeType(data.type);
+            localStorage.setItem("employeeType", data.type);
+          }
         }
       } catch (error) {
         toast.error("Failed to fetch user profile");
@@ -54,7 +55,7 @@ const Navbar = ({ isAdmin }) => {
         </button>
       </div>
 
-      <ul className={`nav-links ${isOpen ? "open" : ""}`} style={{ position: "relative", right: "10vw" }}>
+      <ul className={`nav-links ${isOpen ? "open" : ""}`}>
         <li>
           <Link to="/" className={location.pathname === "/" ? "active" : ""}>
             🏠 Dashboard
@@ -65,46 +66,43 @@ const Navbar = ({ isAdmin }) => {
           <>
             <li>
               <Link to="/leads" className={location.pathname === "/leads" ? "active" : ""}>
-                📋 Leads
-              </Link>
-            </li>
-            <li>
-              <Link to="/sales" className={location.pathname === "/sales" ? "active" : ""}>
-                💰 Sales
+                📊 Leads
               </Link>
             </li>
           </>
         )}
 
-        {employeeType === "accounts" && (
+        {employeeType === "operations" && (
           <li>
-            <Link to="/accounts" className={location.pathname === "/accounts" ? "active" : ""}>
-              📊 Accounts
+            <Link to="/operations" className={location.pathname === "/operations" ? "active" : ""}>
+              🔧 Operations
             </Link>
           </li>
         )}
 
-        {employeeType === "operations" && (
+        {employeeType === "accounts" && (
           <li>
-            <Link to="/operations" className={location.pathname === "/operations" ? "active" : ""}>
-              ⚙️ Operations
+            <Link to="/accounts" className={location.pathname === "/accounts" ? "active" : ""}>
+              💰 Accounts
             </Link>
           </li>
         )}
 
         {isAdmin && (
-          <li>
-            <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
-              🛠️ Admin
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
+                ⚙️ Admin Panel
+              </Link>
+            </li>
+          </>
         )}
       </ul>
 
-      <div className="nav-right" style={{ position: "relative", right: "10vw" }}>
+      <div className="nav-right">
         <div className="nav-profile" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
           <img 
-            src={`https://ui-avatars.com/api/?name=${userName}&background=1e3a8a&color=fff`}
+            src={`https://ui-avatars.com/api/?name=${userName || 'User'}&background=0078d4&color=fff`}
             alt="Profile" 
             className="profile-image"
           />
@@ -112,9 +110,9 @@ const Navbar = ({ isAdmin }) => {
 
         {showProfileDropdown && (
           <div className="profile-dropdown open">
-            <p>{localStorage.getItem("name")}</p>
-            <p>{localStorage.getItem("email")}</p>
-            <p>{employeeType}</p>
+            <p>{localStorage.getItem("name") || userName || "User"}</p>
+            <p>{localStorage.getItem("email") || ""}</p>
+            <p>{employeeType || "Employee"}</p>
             <button className="dropdown-logout" onClick={handleLogout}>
               Logout
             </button>

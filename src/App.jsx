@@ -53,21 +53,40 @@ function App() {
 
       if (response.ok) {
         const data = await response.json();
-        // Use the employeeType from data if available, else fallback to the provided type
-        const employeeTypeReturned = data.employeeType || type;
+        const authToken = data.authToken;
+        
+        // For login, fetch user profile to get employee type
+        let employeeTypeReturned = type;
+        if (!name) { // This is a login request
+          try {
+            const profileResponse = await fetch(`${window.API_URL}/api/gen/user/profile`, {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            });
+            if (profileResponse.ok) {
+              const profileData = await profileResponse.json();
+              employeeTypeReturned = profileData.type;
+            }
+          } catch (error) {
+            console.error("Error fetching profile:", error);
+          }
+        } else {
+          // For registration, use the type provided
+          employeeTypeReturned = type;
+        }
 
-        localStorage.setItem("token", data.authToken);
+        localStorage.setItem("token", authToken);
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("name", data.name || name);
         localStorage.setItem("email", email);
         localStorage.setItem("employeeType", employeeTypeReturned);
+        
         setIsAuthenticated(true);
         setIsAdmin(data.role === "admin");
         setEmployeeType(employeeTypeReturned);
 
         toast.success("Logged in successfully.");
-
-        // Full page reload to re-trigger routing
         window.location.href = data.role === "admin" ? "/admin" : "/";
         return true;
       } else {

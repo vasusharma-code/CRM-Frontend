@@ -217,9 +217,9 @@ const AdminPanel = () => {
     }
 };
 
-const handleDeleteCaller = async (callerId) => {
+const handleDeleteCaller = async (email) => {
     try {
-        const response = await fetch(`${window.API_URL}/api/admin/employee/${callerId}`, {
+        const response = await fetch(`${window.API_URL}/api/admin/employee/${email}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -254,6 +254,27 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
         }
     } catch (error) {
         toast.error("Error updating batch status");
+    }
+};
+
+const handleCallerDelete = async (email) => {
+    try {
+        const response = await fetch(`${window.API_URL}/api/admin/deleteCaller`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ email }),
+        });
+        if (response.ok) {
+            toast.success("Caller deleted successfully");
+            fetchData(); // Refresh the data
+        } else {
+            toast.error("Failed to delete caller");
+        }
+    } catch (error) {
+        toast.error("Error deleting caller");
     }
 };
 
@@ -395,6 +416,7 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Email</th>
                     <th>Assigned Leads</th>
                     <th>Remaining Leads</th>
                     <th>Closed Deals</th>
@@ -405,9 +427,10 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {callers.filter(caller => caller.type === 'sales').map(caller => (
+                  {callers.map(caller => (
                     <tr key={caller._id}>
                       <td>{caller.name}</td>
+                      <td>{caller.email}</td>
                       <td>{getAllotedLeadsCount(caller._id)}</td>
                       <td>{getRemainingLeadsCount(caller._id)}</td>
                       <td>{getClosedDealsCount(caller._id)}</td>
@@ -424,15 +447,45 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                       </td>
                       <td>
                         
-                        <button className="action-btn" onClick={() => handleSaveNeededLeads(caller._id)}>Save</button>
-                        <button className="action-btn" onClick={() => downloadLeads(caller._id)}>Download Leads</button>
-                        <button className="action-btn delete-btn" onClick={() => handleDeleteCaller(caller._id)}>Delete</button>
+                        <button className="action-btn"  onClick={() => handleSaveNeededLeads(caller._id)}>Save</button>
+                        <button className="action-btn" style={{marginTop: "3vh", width: "6vw"}} onClick={() => downloadLeads(caller._id)}>Download Leads</button>
+                        
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+
+            {/* Delete Caller Section */}
+            <div className="delete-caller-section">
+              <h2 className="section-title">Delete Caller</h2>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const email = e.target.elements.email.value;
+                  handleDeleteCaller(email);
+                }}
+                className="form-section"
+              >
+                <div className="input-group">
+                  <label htmlFor="caller-email">Caller Email</label>
+                  <input
+                    style={{height: "5vh", width: "30vw"}}
+                    type="email"
+                    id="caller-email"
+                    name="email"
+                    placeholder="Enter caller's email"
+                    required
+                  />
+                </div>
+                <button type="submit" className="primary-btn" 
+                style={{width: "10vw", height: "5vh", marginTop: "3vh"}}>
+                  Delete Caller
+                </button>
+              </form>
+            </div>
+
             <div className="unassigned-leads">
               <h2 className="section-title">Unassigned Leads</h2>
               <div className="table-container">

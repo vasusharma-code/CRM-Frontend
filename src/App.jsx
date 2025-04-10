@@ -17,8 +17,7 @@ import "./App.css";
 import ViewProof from "./pages/ViewProof"; // Ensure ViewProof is imported
 
 // Set API base URL globally
-// const API_URL = "http://13.201.101.170";
-const API_URL = "http://localhost:3000";
+const API_URL = "http://13.201.101.170";
 window.API_URL = API_URL;
 
 function App() {

@@ -386,6 +386,7 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                       </td>
                       <td>
                         <select
+                          value={lead.assignedTo || ""}
                           onChange={(e) => {
                             if(e.target.value) handleAssignLead(lead._id, e.target.value)
                           }}

@@ -146,6 +146,9 @@ const AdminPanel = () => {
   const getRemainingLeadsCount = (callerId) => {
     return leads.filter(lead => lead.assignedTo === callerId && lead.status === 'new').length;
   };
+  const getAllotedLeadsCount = (callerId) => {
+    return leads.filter(lead => lead.assignedTo === callerId).length;
+  }
 
   const getClosedDealsCount = (callerId) => {
     return leads.filter(lead => lead.assignedTo === callerId && lead.paymentVerified === 'verified').length;
@@ -334,6 +337,7 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                     <th>Lead Name</th>
                     <th>Phone</th>
                     <th>Email</th>
+                    <th>Source</th>
                     <th>Status</th>
                     <th>Assign To</th>
                   </tr>
@@ -344,6 +348,7 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                       <td>{lead.name}</td>
                       <td>{lead.contactNumber}</td>
                       <td>{lead.email}</td>
+                      <td>{lead.source}</td>
                       <td>{lead.status}</td>
                       <td>
                         {lead.assignedTo ? (
@@ -403,7 +408,7 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                   {callers.filter(caller => caller.type === 'sales').map(caller => (
                     <tr key={caller._id}>
                       <td>{caller.name}</td>
-                      <td>{caller.leads.alloted}</td>
+                      <td>{getAllotedLeadsCount(caller._id)}</td>
                       <td>{getRemainingLeadsCount(caller._id)}</td>
                       <td>{getClosedDealsCount(caller._id)}</td>
                       <td>₹{getRevenueGenerated(caller._id)}</td>

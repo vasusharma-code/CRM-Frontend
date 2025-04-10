@@ -45,7 +45,7 @@ const Navbar = ({ isAdmin }) => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar" style={{position: "relative", right: "5vw"}}>
       <div className="navbar-brand">
         <h2 className="logo">CRM Dashboard</h2>
         <button className="mobile-menu-btn" onClick={() => setIsOpen(!isOpen)}>

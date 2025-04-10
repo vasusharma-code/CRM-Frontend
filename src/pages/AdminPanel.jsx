@@ -115,6 +115,27 @@ const AdminPanel = () => {
     }
   };
 
+  const updateLeadStatus = async (leadId, newStatus) => {
+    try {
+        const response = await fetch(`${window.API_URL}/api/admin/updateLeadStatus`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ leadId, status: newStatus }),
+        });
+        if (response.ok) {
+            toast.success("Lead status updated successfully");
+            fetchData(); // Refresh leads
+        } else {
+            toast.error("Failed to update lead status");
+        }
+    } catch (error) {
+        toast.error("Error updating lead status");
+    }
+};
+
   const handleNeededLeadsChange = (callerId, value) => {
     setNeededLeads({
       ...neededLeads,
@@ -257,27 +278,6 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
     }
 };
 
-const handleCallerDelete = async (email) => {
-    try {
-        const response = await fetch(`${window.API_URL}/api/admin/deleteCaller`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ email }),
-        });
-        if (response.ok) {
-            toast.success("Caller deleted successfully");
-            fetchData(); // Refresh the data
-        } else {
-            toast.error("Failed to delete caller");
-        }
-    } catch (error) {
-        toast.error("Error deleting caller");
-    }
-};
-
   return (
     <div className="admin-dashboard">
       <div className="admin-header">
@@ -370,24 +370,33 @@ const handleCallerDelete = async (email) => {
                       <td>{lead.contactNumber}</td>
                       <td>{lead.email}</td>
                       <td>{lead.source}</td>
-                      <td>{lead.status}</td>
                       <td>
-                        {lead.assignedTo ? (
-                          getCallerName(lead.assignedTo)
-                        ) : (
-                          <select 
-                            onChange={(e) => {
-                              if(e.target.value) handleAssignLead(lead._id, e.target.value)
-                            }}
-                          >
-                            <option value="">Select Caller</option>
-                            {callers.map(caller => (
-                              <option key={caller._id} value={caller._id}>
-                                {caller.name}
-                              </option>
-                            ))}
-                          </select>
-                        )}
+                        <select
+                            value={lead.status || ""}
+                            onChange={(e) => updateLeadStatus(lead._id, e.target.value)}
+                        >
+                            <option value="new">NEW</option>
+                            <option value="PICK">PICK</option>
+                            <option value="DNP">DNP</option>
+                            <option value="CTC">CTC</option>
+                            <option value="CB">CB</option>
+                            <option value="NA">NA</option>
+                            <option value="DEL">DELETE</option>
+                        </select>
+                      </td>
+                      <td>
+                        <select
+                          onChange={(e) => {
+                            if(e.target.value) handleAssignLead(lead._id, e.target.value)
+                          }}
+                        >
+                          <option value="">Select Caller</option>
+                          {callers.map(caller => (
+                            <option key={caller._id} value={caller._id}>
+                              {caller.name}
+                            </option>
+                          ))}
+                        </select>
                       </td>
                     </tr>
                   ))}

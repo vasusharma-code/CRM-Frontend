@@ -1,0 +1,242 @@
+.operations-panel {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.operations-header {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  color: white;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+}
+
+.operations-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.operations-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.metric-card h3 {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-card .value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.operations-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.task-list {
+  padding: 1.5rem;
+}
+
+.task-item {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.task-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.task-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-in-progress {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-completed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.task-details {
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.task-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.task-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.action-button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-update {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+}
+
+.btn-complete {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+}
+
+.timeline {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 2rem;
+  padding-bottom: 1.5rem;
+  border-left: 2px solid #e2e8f0;
+}
+
+.timeline-item:last-child {
+  border-left: none;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -0.5rem;
+  width: 1rem;
+  height: 1rem;
+  background: #3b82f6;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.timeline-content {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .operations-panel {
+    padding: 1rem;
+  }
+
+  .operations-header {
+    padding: 1.5rem;
+  }
+
+  .operations-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .operations-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .task-meta {
+    flex-wrap: wrap;
+  }
+
+  .task-actions {
+    flex-direction: column;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+}

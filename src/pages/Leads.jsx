@@ -150,6 +150,28 @@ const Leads = () => {
     }
 };
 
+  const sortLeads = (leadsArray) => {
+    const order = {
+      "Potential": 1,
+      "Willing To Pay": 2,
+      "Needs to Convince Parents": 3,
+      "Paid": 4
+    };
+    return [...leadsArray].sort((a, b) => {
+      return (order[a.salesStatus] || 5) - (order[b.salesStatus] || 5);
+    });
+  };
+
+  const getSalesStatusClass = (status) => {
+    switch(status) {
+      case "Potential": return "sales-status-potential";
+      case "Willing To Pay": return "sales-status-willing";
+      case "Needs to Convince Parents": return "sales-status-convince";
+      case "Paid": return "sales-status-paid";
+      default: return "";
+    }
+  };
+
   if (loading) return <div className="loading">Loading...</div>;
 
   return (
@@ -173,9 +195,9 @@ const Leads = () => {
           </tr>
         </thead>
         <tbody>
-          {leads.map((lead) => (
+          {sortLeads(leads).map((lead) => (
             <React.Fragment key={lead._id}>
-              <tr>
+              <tr className={getSalesStatusClass(lead.salesStatus)}>
                 <td>{lead.name}</td>
                 <td>{lead.contactNumber}</td>
                 <td>{lead.source}</td>
@@ -273,11 +295,13 @@ const Leads = () => {
                     </button>
                   </div>
                 </td>
-                <td>
+                <td className={`sales-status ${getSalesStatusClass(lead.salesStatus)}`}>
                   <select
                     value={lead.salesStatus || ""}
                     onChange={(e) => updateLeadField(lead._id, "salesStatus", e.target.value)}
                   >
+                    <option value="">Select Status</option>
+                    <option value="Potential">Potential</option>
                     <option value="Willing To Pay">Willing To Pay</option>
                     <option value="Needs to Convince Parents">Needs to Convince Parents</option>
                     <option value="Paid">Paid</option>
@@ -285,7 +309,7 @@ const Leads = () => {
                 </td>
               </tr>
               {lead.status === "closed-success" && lead.paymentVerified === "unverified" && (
-                <tr>
+                <tr className={getSalesStatusClass(lead.salesStatus)}>
                   <td colSpan="11">
                     <div className="proof-upload-section">
                       <h4>Upload Proofs</h4>

@@ -1,5 +1,5 @@
-/* Global container styling */
-.accounts-dashboard {
+/* Mobile first styles */
+.operations-dashboard {
   padding: 1rem;
   background-color: #fff;
   min-height: 100vh;
@@ -9,16 +9,14 @@
   box-sizing: border-box;
 }
 
-/* Dashboard header */
 .dashboard-heading {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #0078d4;
+  color: #2563eb;
   margin: 1rem 0;
   text-align: center;
 }
 
-/* Table wrapper styling */
 .leads-table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -29,7 +27,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Table styling */
 .leads-table {
   width: 100%;
   min-width: 750px;
@@ -39,7 +36,7 @@
 }
 
 .leads-table thead tr {
-  background-color: #0078d4;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #fff;
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -49,74 +46,51 @@
 .leads-table th,
 .leads-table td {
   padding: 0.75rem;
-  border: 1px solid #e2e2e2;
+  border: 1px solid #e5e7eb;
   text-align: left;
   font-size: 0.875rem;
 }
 
 .leads-table tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
+  background-color: #f8fafc;
 }
 
 .leads-table tbody tr:hover {
-  background-color: #f0f7ff;
+  background-color: #eff6ff;
 }
 
-/* Link styling for payment proof */
-.leads-table a {
-  color: #0078d4;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.leads-table a:hover {
-  text-decoration: underline;
-}
-
-/* Button styling for payment proof */
-.proof-button {
-  padding: 0.5rem 1rem;
-  background: #0078d4;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: background-color 0.2s;
-  width: 100%;
-  max-width: 150px;
-}
-
-.proof-button:hover {
-  background: #006cbd;
-}
-
-/* Select dropdown styling */
 .status-select {
   width: 100%;
   max-width: 140px;
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid #cbd5e1;
   border-radius: 4px;
   font-size: 0.875rem;
   background-color: #fff;
+  transition: all 0.2s;
 }
 
-.leads-table select {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  font-size: 0.9rem;
+.status-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
   outline: none;
-  transition: border-color 0.2s ease-in-out;
 }
 
-.leads-table select:focus {
-  border-color: #0078d4;
+.amount-cell {
+  font-weight: 600;
+  color: #059669;
 }
 
-/* Loading state */
+.books-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
 .loading {
   text-align: center;
   padding: 2rem;
@@ -126,7 +100,7 @@
 
 /* Tablet styles */
 @media (min-width: 768px) {
-  .accounts-dashboard {
+  .operations-dashboard {
     padding: 1.5rem;
   }
 
@@ -144,7 +118,7 @@
 
 /* Desktop styles */
 @media (min-width: 1024px) {
-  .accounts-dashboard {
+  .operations-dashboard {
     padding: 2rem;
     margin: 2rem auto;
     max-width: 1200px;

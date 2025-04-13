@@ -57,7 +57,7 @@ const Navbar = ({ isAdmin }) => {
 
       <ul className={`nav-links ${isOpen ? "open" : ""}`}>
         <li>
-          <Link to="/" className={location.pathname === "/" ? "active" : ""}>
+          <Link to="/" className={location.pathname === "/" ? "active" : ""} onClick={() => setIsOpen(false)}>
             🏠 Dashboard
           </Link>
         </li>
@@ -65,7 +65,7 @@ const Navbar = ({ isAdmin }) => {
         {employeeType === "sales" && (
           <>
             <li>
-              <Link to="/leads" className={location.pathname === "/leads" ? "active" : ""}>
+              <Link to="/leads" className={location.pathname === "/leads" ? "active" : ""} onClick={() => setIsOpen(false)}>
                 📊 Leads
               </Link>
             </li>
@@ -74,7 +74,7 @@ const Navbar = ({ isAdmin }) => {
 
         {employeeType === "operations" && (
           <li>
-            <Link to="/operations" className={location.pathname === "/operations" ? "active" : ""}>
+            <Link to="/operations" className={location.pathname === "/operations" ? "active" : ""} onClick={() => setIsOpen(false)}>
               🔧 Operations
             </Link>
           </li>
@@ -82,7 +82,7 @@ const Navbar = ({ isAdmin }) => {
 
         {employeeType === "accounts" && (
           <li>
-            <Link to="/accounts" className={location.pathname === "/accounts" ? "active" : ""}>
+            <Link to="/accounts" className={location.pathname === "/accounts" ? "active" : ""} onClick={() => setIsOpen(false)}>
               💰 Accounts
             </Link>
           </li>
@@ -91,7 +91,7 @@ const Navbar = ({ isAdmin }) => {
         {isAdmin && (
           <>
             <li>
-              <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""}>
+              <Link to="/admin" className={location.pathname === "/admin" ? "active" : ""} onClick={() => setIsOpen(false)}>
                 ⚙️ Admin Panel
               </Link>
             </li>

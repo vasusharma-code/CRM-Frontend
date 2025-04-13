@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-// import "../styles/OperationsDashboard.css";
+import "../styles/OperationsDashboard.css";
 
 const OperationsDashboard = () => {
     const [leads, setLeads] = useState([]);
-    const [batchMap, setBatchMap] = useState({}); // Map to store batch details
-    const [amountMap, setAmountMap] = useState({}); // Map to store amounts
+    const [batchMap, setBatchMap] = useState({});
+    const [amountMap, setAmountMap] = useState({});
     const [loading, setLoading] = useState(true);
 
     const fetchLeads = async () => {
@@ -95,48 +95,52 @@ const OperationsDashboard = () => {
     return (
         <div className="operations-dashboard">
             <h1 className="dashboard-heading">Operations Dashboard</h1>
-            <table className="leads-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Number</th>
-                        <th>Batch</th>
-                        <th>Books</th>
-                        <th>Added to Group</th>
-                        <th>Registered on App</th>
-                        <th>Amount Paid</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {leads.map((lead) => (
-                        <tr key={lead._id}>
-                            <td>{lead.name}</td>
-                            <td>{lead.contactNumber}</td>
-                            <td>{batchMap[lead.batch]?.name || "N/A"}</td>
-                            <td>{lead.books ? "Yes" : "No"}</td>
-                            <td>
-                                <select
-                                    value={lead.addedToGroup || "remaining"}
-                                    onChange={(e) => handleOperationStatusChange(lead._id, "addedToGroup", e.target.value)}
-                                >
-                                    <option value="remaining">Remaining</option>
-                                    <option value="completed">Completed</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select
-                                    value={lead.registeredOnApp || "remaining"}
-                                    onChange={(e) => handleOperationStatusChange(lead._id, "registeredOnApp", e.target.value)}
-                                >
-                                    <option value="remaining">Remaining</option>
-                                    <option value="completed">Completed</option>
-                                </select>
-                            </td>
-                            <td>₹{amountMap[lead._id] || "N/A"}</td>
+            <div className="leads-table-wrapper">
+                <table className="leads-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Number</th>
+                            <th>Batch</th>
+                            <th>Books</th>
+                            <th>Added to Group</th>
+                            <th>Registered on App</th>
+                            <th>Amount Paid</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {leads.map((lead) => (
+                            <tr key={lead._id}>
+                                <td>{lead.name}</td>
+                                <td>{lead.contactNumber}</td>
+                                <td>{batchMap[lead.batch]?.name || "N/A"}</td>
+                                <td><span className="books-badge">{lead.books ? "Yes" : "No"}</span></td>
+                                <td>
+                                    <select
+                                        className="status-select"
+                                        value={lead.addedToGroup || "remaining"}
+                                        onChange={(e) => handleOperationStatusChange(lead._id, "addedToGroup", e.target.value)}
+                                    >
+                                        <option value="remaining">Remaining</option>
+                                        <option value="completed">Completed</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select
+                                        className="status-select"
+                                        value={lead.registeredOnApp || "remaining"}
+                                        onChange={(e) => handleOperationStatusChange(lead._id, "registeredOnApp", e.target.value)}
+                                    >
+                                        <option value="remaining">Remaining</option>
+                                        <option value="completed">Completed</option>
+                                    </select>
+                                </td>
+                                <td className="amount-cell">₹{amountMap[lead._id] || "N/A"}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

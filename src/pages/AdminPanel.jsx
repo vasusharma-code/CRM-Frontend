@@ -93,6 +93,17 @@ const AdminPanel = () => {
     const caller = callers.find(c => c._id === callerId);
     return caller ? caller.name : callerId;
   };
+  const getCallerLeads = async(callerId) => {
+    const response = await fetch(`${window.API_URL}/api/admin/getCallerLeads`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ leadId, callerId }),
+    }); 
+    return response
+  }
 
   const handleAssignLead = async (leadId, callerId) => {
     try {
@@ -165,7 +176,7 @@ const AdminPanel = () => {
   };
 
   const getRemainingLeadsCount = (callerId) => {
-    return leads.filter(lead => lead.assignedTo === callerId && lead.status === 'new').length;
+    return leads.filter(lead => lead.assignedTo === callerId && (lead.status === 'new' || lead.status==="DNP")).length;
   };
   const getAllotedLeadsCount = (callerId) => {
     return leads.filter(lead => lead.assignedTo === callerId).length;
@@ -256,6 +267,47 @@ const handleDeleteCaller = async (email) => {
         toast.error("Error deleting caller");
     }
 };
+
+// const getConversationRatio = async(caller_id) => {
+//   try {
+//     const response = await fetch(`${window.API_URL}/api/admin/emp/conversion/${caller_id}`, {
+//         method: "GET",
+//         headers: {
+//             "Content-Type": "application/json",
+//             Authorization: `Bearer ${localStorage.getItem("token")}`,
+//         }
+//     });
+//     if (response.ok) {
+//         toast.success("needed leads reset");
+//         const finalResponse = await response.json()
+//         return finalResponse.ratio
+//     } else {
+//         toast.error("Failed to reset needed leads");
+//     }
+// } catch (error) {
+//     toast.error("Error");
+// }
+// }
+
+const handleResetNeededLeads = async() => {
+  try {
+    const response = await fetch(`${window.API_URL}/api/admin/resetNeededLeads`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+    });
+    if (response.ok) {
+        toast.success("needed leads reset");
+    } else {
+        toast.error("Failed to reset needed leads");
+    }
+} catch (error) {
+    toast.error("Error");
+}
+};
+
 
 const handleBatchStatusChange = async (batchId, newStatus) => {
     try {
@@ -357,7 +409,6 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                   <tr>
                     <th>Lead Name</th>
                     <th>Phone</th>
-                    <th>Email</th>
                     <th>Source</th>
                     <th>Status</th>
                     <th>Assign To</th>
@@ -368,7 +419,6 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                     <tr key={lead._id}>
                       <td>{lead.name}</td>
                       <td>{lead.contactNumber}</td>
-                      <td>{lead.email}</td>
                       <td>{lead.source}</td>
                       <td>
                         <select
@@ -432,7 +482,6 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                     <th>Closed Deals</th>
                     <th>Revenue Generated</th>
                     <th>Needed Leads</th>
-                    <th>Conversion Rate</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -453,9 +502,6 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                         />
                       </td>
                       <td>
-                      { (getClosedDealsCount(caller._id) / (caller.leads.alloted - getRemainingLeadsCount(caller._id))) * 100}%
-                      </td>
-                      <td>
                         
                         <button className="action-btn"  onClick={() => handleSaveNeededLeads(caller._id)}>Save</button>
                         <button className="action-btn" style={{marginTop: "3vh", width: "6vw"}} onClick={() => downloadLeads(caller._id)}>Download Leads</button>
@@ -463,6 +509,7 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                       </td>
                     </tr>
                   ))}
+                  <button className="action-btn"  onClick={() => handleResetNeededLeads()}>Reset Needed Leads</button>
                 </tbody>
               </table>
             </div>
@@ -504,7 +551,6 @@ const handleBatchStatusChange = async (batchId, newStatus) => {
                     <tr>
                       <th>Lead Name</th>
                       <th>Phone</th>
-                      <th>Email</th>
                       <th>Status</th>
                     </tr>
                   </thead>

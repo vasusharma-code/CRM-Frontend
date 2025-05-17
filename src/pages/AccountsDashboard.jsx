@@ -106,6 +106,7 @@ const AccountsDashboard = () => {
               <th>Batch</th>
               <th>With Books</th>
               <th>Amount</th>
+              <th>Comments</th>
               <th>Payment Proof</th>
               <th>Books Proof</th>
               <th>Form Proof</th>
@@ -120,6 +121,7 @@ const AccountsDashboard = () => {
                 <td>{batchMap[lead.batch]?.name || "N/A"}</td>
                 <td>{lead.books ? "Yes" : "No"}</td>
                 <td>₹{amountMap[lead._id] || "N/A"}</td>
+                <td>{lead.comment}</td>
                 <td>
                   {lead.paymentProof ? (
                     <button
